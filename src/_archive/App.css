@@ -3860,3 +3860,57 @@
     max-width: calc(100% - 20px);
   }
 }
+
+
+
+/* =========================
+   SIDEBAR HOVER POLISH
+========================= */
+
+.nav-item,
+.settings-btn {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.nav-item svg,
+.settings-btn svg {
+  transition: transform 0.2s ease;
+}
+
+/* Hover effect for inactive menu items */
+.nav-item:not(.active):hover,
+.settings-btn:not(.settings-active):hover {
+  background: rgba(220, 239, 210, 0.12);
+  transform: translateX(3px);
+}
+
+/* Small icon movement */
+.nav-item:not(.active):hover svg,
+.settings-btn:not(.settings-active):hover svg {
+  transform: scale(1.08);
+}
+
+/* Keep active Home stable */
+.nav-item.active {
+  transform: none;
+}
+
+/* Profile hover */
+.farmer-profile {
+  transition: transform 0.2s ease;
+}
+
+.farmer-profile:hover {
+  transform: translateX(3px);
+}
+
+.profile-avatar {
+  transition: transform 0.2s ease;
+}
+
+.farmer-profile:hover .profile-avatar {
+  transform: scale(1.05);
+}

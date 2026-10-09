@@ -2,11 +2,11 @@ import {
   Home,
   Sprout,
   CloudSun,
-  AlertTriangle,
-  Radio,
-  Map,
+  TriangleAlert,
+  RadioTower,
+  MapPinned,
   Settings,
-  User,
+  UserRound,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -15,9 +15,9 @@ const menuItems = [
   { name: "Home", path: "/", icon: Home },
   { name: "My Farm", path: "/farm", icon: Sprout },
   { name: "Weather", path: "/weather", icon: CloudSun },
-  { name: "Advisory", path: "/advisory", icon: AlertTriangle },
-  { name: "Sensors", path: "/sensors", icon: Radio },
-  { name: "Panchayat Map", path: "/map", icon: Map },
+  { name: "Advisory", path: "/advisory", icon: TriangleAlert },
+  { name: "Sensors", path: "/sensors", icon: RadioTower },
+  { name: "Panchayat Map", path: "/map", icon: MapPinned },
 ];
 
 function Sidebar() {
@@ -71,7 +71,7 @@ function Sidebar() {
           className="farmer-profile"
         >
           <div className="profile-avatar">
-            <User size={17} />
+            <UserRound size={17} />
           </div>
 
           <div>

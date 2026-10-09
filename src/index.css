@@ -1,159 +1,95 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #1c2921;
+  background: #f5f7f2;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+  --agri-green: #26734d;
+  --agri-green-dark: #185b3a;
+  --agri-ink: #1c2921;
+  --agri-muted: #68746c;
+  --agri-border: #e3e9e2;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #f5f7f2;
 }
 
 body {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  background: #f5f7f3;
-  color: #1f2a24;
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f5f7f2;
+  color: var(--agri-ink);
 }
 
 button,
+select,
 a {
-  font: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
-a {
-  text-decoration: none;
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 3px solid #70b58d;
+  outline-offset: 3px;
 }
 
-.app-layout {
-  min-height: 100vh;
-  display: flex;
+::selection {
+  color: #154b31;
+  background: #cdebd8;
 }
 
-.sidebar {
-  width: 250px;
-  min-height: 100vh;
-  background: #173b2b;
-  color: white;
-  padding: 28px 18px;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
+.page-heading {
+  padding-bottom: 0.1rem;
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 10px;
-  margin-bottom: 42px;
+.page-heading h2 {
+  color: var(--agri-ink);
+  font-size: clamp(1.65rem, 4vw, 2.1rem);
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
 }
 
-.brand-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: #dcefd2;
-  color: #173b2b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.page-heading > p {
+  max-width: 44rem;
+  color: var(--agri-muted);
+  font-size: 0.95rem;
+  line-height: 1.65;
 }
 
-.brand h2 {
-  font-size: 20px;
-  font-weight: 700;
+.dashboard-welcome h2 {
+  letter-spacing: -0.045em;
 }
 
-.brand span {
-  display: block;
-  margin-top: 2px;
-  font-size: 11px;
-  color: #b9c9bf;
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
 }
 
-.sidebar-nav {
-  flex: 1;
+@media (max-width: 640px) {
+  .page-heading > p {
+    font-size: 0.9rem;
+  }
 }
 
-.nav-label {
-  padding: 0 12px;
-  margin-bottom: 12px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  color: #8fa99a;
-}
-
-.nav-item,
-.settings-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  padding: 12px;
-  margin-bottom: 6px;
-  border: none;
-  border-radius: 10px;
-  color: #c5d2c9;
-  background: transparent;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.nav-item:hover,
-.settings-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: white;
-}
-
-.nav-item.active {
-  background: #dcefd2;
-  color: #173b2b;
-  font-weight: 600;
-}
-
-.sidebar-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 18px;
-}
-
-.settings-btn {
-  margin-bottom: 18px;
-}
-
-.farmer-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px;
-}
-
-.profile-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #dcefd2;
-  color: #173b2b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-}
-
-.farmer-profile strong {
-  display: block;
-  font-size: 13px;
-}
-
-.farmer-profile span {
-  display: block;
-  margin-top: 2px;
-  font-size: 11px;
-  color: #9fb2a5;
-}
-
-.main-content {
-  width: calc(100% - 250px);
-  min-height: 100vh;
-  margin-left: 250px;
-  padding: 36px;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
