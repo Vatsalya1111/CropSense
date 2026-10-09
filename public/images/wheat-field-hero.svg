@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7dd3fc" />
+      <stop offset="50%" stop-color="#bae6fd" />
+      <stop offset="100%" stop-color="#fef08a" />
+    </linearGradient>
+    <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <linearGradient id="hillGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#86efac" />
+      <stop offset="100%" stop-color="#22c55e" />
+    </linearGradient>
+    <linearGradient id="hillGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4ade80" />
+      <stop offset="100%" stop-color="#15803d" />
+    </linearGradient>
+    <linearGradient id="fieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#65a30d" />
+      <stop offset="50%" stop-color="#ca8a04" />
+      <stop offset="100%" stop-color="#854d0e" />
+    </linearGradient>
+  </defs>
+
+  <!-- Sky & Soft Sun -->
+  <rect width="1200" height="400" fill="url(#skyGrad)" />
+  <circle cx="950" cy="110" r="70" fill="url(#sunGrad)" opacity="0.85" filter="drop-shadow(0 0 25px #fef08a)" />
+  <ellipse cx="200" cy="90" rx="90" ry="24" fill="#ffffff" opacity="0.75" />
+  <ellipse cx="250" cy="80" rx="60" ry="28" fill="#ffffff" opacity="0.8" />
+  <ellipse cx="650" cy="110" rx="110" ry="22" fill="#ffffff" opacity="0.7" />
+
+  <!-- Distant Hills -->
+  <path d="M 0,220 Q 300,160 600,200 T 1200,180 L 1200,400 L 0,400 Z" fill="url(#hillGrad1)" opacity="0.7" />
+  <path d="M 0,240 Q 350,190 750,230 T 1200,210 L 1200,400 L 0,400 Z" fill="url(#hillGrad2)" opacity="0.85" />
+
+  <!-- Agricultural Furrows / Ground -->
+  <path d="M 0,260 Q 400,240 1200,250 L 1200,400 L 0,400 Z" fill="url(#fieldGrad)" />
+
+  <!-- Perspective Crop Rows -->
+  <g stroke="#eab308" stroke-width="3" opacity="0.45">
+    <line x1="600" y1="250" x2="0" y2="400" />
+    <line x1="600" y1="250" x2="150" y2="400" />
+    <line x1="600" y1="250" x2="300" y2="400" />
+    <line x1="600" y1="250" x2="450" y2="400" />
+    <line x1="600" y1="250" x2="600" y2="400" />
+    <line x1="600" y1="250" x2="750" y2="400" />
+    <line x1="600" y1="250" x2="900" y2="400" />
+    <line x1="600" y1="250" x2="1050" y2="400" />
+    <line x1="600" y1="250" x2="1200" y2="400" />
+  </g>
+
+  <!-- Foreground Wheat Stalks & Golden Crops -->
+  <g fill="#ca8a04">
+    <!-- Cluster 1 -->
+    <path d="M 60,400 Q 75,340 70,300 Q 85,320 80,400 Z" fill="#eab308" />
+    <ellipse cx="70" cy="300" rx="8" ry="18" transform="rotate(-10 70 300)" fill="#facc15" />
+    <ellipse cx="68" cy="315" rx="7" ry="14" transform="rotate(-15 68 315)" fill="#eab308" />
+    <ellipse cx="72" cy="330" rx="7" ry="14" transform="rotate(10 72 330)" fill="#ca8a04" />
+
+    <path d="M 120,400 Q 140,320 135,280 Q 150,310 145,400 Z" fill="#ca8a04" />
+    <ellipse cx="135" cy="280" rx="8" ry="20" transform="rotate(8 135 280)" fill="#facc15" />
+    <ellipse cx="132" cy="298" rx="7" ry="15" transform="rotate(-10 132 298)" fill="#eab308" />
+
+    <!-- Cluster 2 Center-Right -->
+    <path d="M 1040,400 Q 1055,330 1050,290 Q 1065,315 1060,400 Z" fill="#eab308" />
+    <ellipse cx="1050" cy="290" rx="8" ry="20" transform="rotate(-6 1050 290)" fill="#facc15" />
+    <ellipse cx="1048" cy="308" rx="7" ry="15" transform="rotate(-12 1048 308)" fill="#ca8a04" />
+
+    <path d="M 1120,400 Q 1135,310 1130,270 Q 1145,300 1140,400 Z" fill="#ca8a04" />
+    <ellipse cx="1130" cy="270" rx="9" ry="22" transform="rotate(12 1130 270)" fill="#fde047" />
+    <ellipse cx="1127" cy="290" rx="8" ry="16" transform="rotate(-8 1127 290)" fill="#eab308" />
+  </g>
+
+  <!-- Green vegetative blades -->
+  <g fill="#16a34a" opacity="0.85">
+    <path d="M 30,400 Q 55,350 40,320 Q 30,360 20,400 Z" />
+    <path d="M 90,400 Q 110,360 125,340 Q 100,370 85,400 Z" />
+    <path d="M 1000,400 Q 1025,350 1010,330 Q 995,370 985,400 Z" />
+    <path d="M 1080,400 Q 1100,360 1115,330 Q 1090,370 1075,400 Z" />
+  </g>
+</svg>
