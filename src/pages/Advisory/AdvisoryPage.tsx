@@ -11,6 +11,7 @@ export const AdvisoryPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setError(null);
     advisoryService.getAdvisories().then(setAdvisories).catch(() => setError('Farm guidance is unavailable. Start the CropSense API and try again.'));
   }, [t]);
 
