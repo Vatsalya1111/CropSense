@@ -1,12 +1,13 @@
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
 
+let language: 'en' | 'hi' = 'en';
+
+export function setApiLanguage(nextLanguage: 'en' | 'hi'): void {
+  language = nextLanguage;
+}
+
 function currentLanguage(): 'en' | 'hi' {
-  try {
-    const settings = JSON.parse(localStorage.getItem('agrisense_settings') || '{}') as { language?: string };
-    return settings.language === 'hi' ? 'hi' : 'en';
-  } catch {
-    return 'en';
-  }
+  return language;
 }
 
 export async function apiGet<T>(resource: string): Promise<T> {

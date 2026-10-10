@@ -128,7 +128,7 @@ def build_alerts(weather: dict, predictions: dict, language: str = "en") -> list
     crop = predictions["cropHealth"]
     alerts = []
     hindi = language == "hi"
-    timestamp = datetime.now().astimezone().strftime("%I:%M %p Today")
+    timestamp = datetime.now(timezone.utc).isoformat()
 
     if irrigation["irrigationStatus"] == "Irrigate immediately":
         alerts.append({
