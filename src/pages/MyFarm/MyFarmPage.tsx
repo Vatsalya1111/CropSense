@@ -5,6 +5,7 @@ import { Farm } from '../../types';
 import { Tractor, Sprout, Layers, Droplets, Compass } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
+import { useI18n } from '../../i18n';
 
 // Fix Leaflet default icon paths in React/Vite builds
 delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl;
@@ -15,6 +16,7 @@ L.Icon.Default.mergeOptions({
 });
 
 export const MyFarmPage: React.FC = () => {
+  const { t } = useI18n();
   const [farm, setFarm] = useState<Farm | null>(null);
 
   useEffect(() => {
@@ -22,7 +24,7 @@ export const MyFarmPage: React.FC = () => {
   }, []);
 
   if (!farm) {
-    return <div className="p-16 text-center text-stone-500 font-medium">Loading your farm profile...</div>;
+    return <div className="p-16 text-center text-stone-500 font-medium">{t('Loading your farm profile...')}</div>;
   }
 
   return (
@@ -31,13 +33,13 @@ export const MyFarmPage: React.FC = () => {
       <div className="page-heading">
         <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800 uppercase tracking-wider mb-0.5">
           <Tractor size={14} className="text-emerald-700" />
-          <span>Field Profile</span>
+          <span>{t('Field Profile')}</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
-          What Is My Farm and Crop?
+          {t('What Is My Farm and Crop?')}
         </h2>
         <p className="text-sm text-stone-600 mt-1">
-          Registered land details, crop stage, and GPS location for Rampur Adarsh Khet.
+          {t('Registered land details, crop stage, and GPS location for your farm.')}
         </p>
       </div>
 
@@ -51,12 +53,12 @@ export const MyFarmPage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/30 to-transparent flex flex-col justify-end p-5 text-white">
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-600 text-[11px] font-bold uppercase tracking-wider">
-              Registered Plot
+              {t('Registered Plot')}
             </span>
             <span className="text-xs text-stone-200">{farm.location.village}, {farm.location.district}</span>
           </div>
           <h3 className="text-xl sm:text-2xl font-bold mt-1 text-white">
-            {farm.name} • {farm.crop} ({farm.area} {farm.areaUnit})
+            {farm.name} • {t(farm.crop)} ({farm.area} {t(farm.areaUnit)})
           </h3>
         </div>
       </div>
@@ -67,25 +69,25 @@ export const MyFarmPage: React.FC = () => {
           <div className="flex justify-center text-stone-400 mb-1.5">
             <Compass size={20} />
           </div>
-          <div className="text-[11px] text-stone-500 font-bold uppercase tracking-wider">Total Area</div>
-          <div className="text-base sm:text-lg font-black text-stone-900 mt-0.5">{farm.area} {farm.areaUnit}</div>
+          <div className="text-[11px] text-stone-500 font-bold uppercase tracking-wider">{t('Total Area')}</div>
+          <div className="text-base sm:text-lg font-black text-stone-900 mt-0.5">{farm.area} {t(farm.areaUnit)}</div>
         </Card>
 
         <Card className="text-center p-4 rounded-2xl border-stone-200/80 shadow-xs">
           <div className="flex justify-center text-emerald-600 mb-1.5">
             <Sprout size={20} />
           </div>
-          <div className="text-[11px] text-stone-500 font-bold uppercase tracking-wider">Primary Crop</div>
-          <div className="text-base sm:text-lg font-black text-emerald-800 mt-0.5 truncate">{farm.crop}</div>
+          <div className="text-[11px] text-stone-500 font-bold uppercase tracking-wider">{t('Primary Crop')}</div>
+          <div className="text-base sm:text-lg font-black text-emerald-800 mt-0.5 truncate">{t(farm.crop)}</div>
         </Card>
 
         <Card className="text-center p-4 rounded-2xl border-stone-200/80 shadow-xs">
           <div className="flex justify-center text-emerald-600 mb-1.5">
             <Tractor size={20} />
           </div>
-          <div className="text-[11px] text-stone-500 font-bold uppercase tracking-wider">Crop Stage</div>
+          <div className="text-[11px] text-stone-500 font-bold uppercase tracking-wider">{t('Crop Stage')}</div>
           <div className="text-xs sm:text-sm font-bold text-stone-900 mt-1 truncate" title={farm.cropStage}>
-            {farm.cropStage}
+            {t(farm.cropStage)}
           </div>
         </Card>
 
@@ -93,21 +95,21 @@ export const MyFarmPage: React.FC = () => {
           <div className="flex justify-center text-amber-600 mb-1.5">
             <Layers size={20} />
           </div>
-          <div className="text-[11px] text-stone-500 font-bold uppercase tracking-wider">Soil Type</div>
-          <div className="text-base sm:text-lg font-black text-stone-900 mt-0.5">{farm.soilType}</div>
+          <div className="text-[11px] text-stone-500 font-bold uppercase tracking-wider">{t('Soil Type')}</div>
+          <div className="text-base sm:text-lg font-black text-stone-900 mt-0.5">{t(farm.soilType)}</div>
         </Card>
 
         <Card className="text-center p-4 rounded-2xl border-stone-200/80 shadow-xs col-span-2 sm:col-span-1">
           <div className="flex justify-center text-sky-600 mb-1.5">
             <Droplets size={20} />
           </div>
-          <div className="text-[11px] text-stone-500 font-bold uppercase tracking-wider">Water System</div>
-          <div className="text-base sm:text-lg font-black text-stone-900 mt-0.5 truncate">{farm.irrigationType}</div>
+          <div className="text-[11px] text-stone-500 font-bold uppercase tracking-wider">{t('Water System')}</div>
+          <div className="text-base sm:text-lg font-black text-stone-900 mt-0.5 truncate">{t(farm.irrigationType)}</div>
         </Card>
       </div>
 
       {/* Simple Leaflet Map Container */}
-      <Card title="Farm Ground Location & Satellite Map" subtitle="OpenStreetMap GPS view of your wheat plot">
+      <Card title={t('Farm Ground Location & Satellite Map')} subtitle={t('OpenStreetMap GPS view of your wheat plot')}>
         <div className="h-64 sm:h-80 w-full rounded-xl overflow-hidden border border-stone-200 mt-2 z-0 relative">
           <MapContainer
             center={[farm.location.lat, farm.location.lng]}
@@ -124,7 +126,7 @@ export const MyFarmPage: React.FC = () => {
                 <div className="text-xs">
                   <strong>{farm.name}</strong>
                   <br />
-                  {farm.crop} ({farm.area} {farm.areaUnit})
+                {t(farm.crop)} ({farm.area} {t(farm.areaUnit)})
                 </div>
               </Popup>
             </Marker>

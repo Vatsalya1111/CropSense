@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Home, Tractor, CloudSun, ClipboardCheck, AlertTriangle } from 'lucide-react';
+import { useI18n } from '../../i18n';
 
 interface BottomNavItem {
   label: string;
@@ -17,10 +18,11 @@ const bottomNavItems: BottomNavItem[] = [
 ];
 
 export const BottomNav: React.FC = () => {
+  const { t } = useI18n();
   return (
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-stone-200/80 shadow-[0_-8px_24px_rgba(33,54,39,0.06)] z-40 safe-bottom"
-      aria-label="Mobile Navigation"
+      aria-label={t('Main navigation')}
     >
       <div className="grid grid-cols-5 h-[4.25rem] max-w-lg mx-auto px-1">
         {bottomNavItems.map((item) => {
@@ -42,7 +44,7 @@ export const BottomNav: React.FC = () => {
                 <>
                   <Icon size={20} className={isActive ? 'stroke-[2.5px]' : 'stroke-[1.8px]'} />
                   <span className="text-[11px] mt-1 tracking-tight truncate max-w-full">
-                    {item.label}
+                    {t(item.label)}
                   </span>
                   {isActive && (
                     <span className="absolute top-0 w-8 h-0.5 bg-emerald-700 rounded-full" />

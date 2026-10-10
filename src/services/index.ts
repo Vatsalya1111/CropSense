@@ -7,6 +7,5 @@ export { alertService } from './alertService';
 export {
   getStoredSettings,
   saveStoredSettings,
-  getActiveScenarioId,
   DEFAULT_SETTINGS,
-} from './scenarioState';
+} from './settingsState';

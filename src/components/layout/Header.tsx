@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Sprout, Settings, MapPin, Sun, CloudRain } from 'lucide-react';
-import { useApp } from '../../context/AppContext';
-import { mockFarm } from '../../data/mockData';
+import { Sprout, Settings, MapPin } from 'lucide-react';
+import { farmService } from '../../services';
+import { Farm } from '../../types';
+import { useI18n } from '../../i18n';
 
 const PAGE_TITLES: Record<string, string> = {
   '/': 'Today on My Farm',
@@ -17,8 +18,13 @@ const PAGE_TITLES: Record<string, string> = {
 
 export const Header: React.FC = () => {
   const location = useLocation();
-  const { settings, setScenario } = useApp();
-  const currentTitle = PAGE_TITLES[location.pathname] || 'AgriSense';
+  const { t } = useI18n();
+  const [farm, setFarm] = useState<Farm | null>(null);
+  const currentTitle = t(PAGE_TITLES[location.pathname] || 'AgriSense');
+
+  useEffect(() => {
+    farmService.getFarm().then(setFarm).catch(() => setFarm(null));
+  }, []);
 
   return (
     <header className="sticky top-0 z-20 bg-[#fbfcf9]/95 backdrop-blur-xl border-b border-[#e5ebe3]">
@@ -34,45 +40,13 @@ export const Header: React.FC = () => {
             </h1>
             <div className="flex items-center gap-1.5 text-xs text-stone-500">
               <MapPin size={12} className="text-emerald-700 shrink-0" />
-              <span className="truncate">{mockFarm.name} • {mockFarm.location.village}</span>
+              <span className="truncate">{farm ? `${farm.name} · ${farm.location.village}` : t('Farm profile unavailable')}</span>
             </div>
           </div>
         </div>
 
-        {/* Right: Quick Scenario Switcher & Settings */}
+        {/* Right: Settings */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {/* Quick Scenario Selector */}
-          <div className="flex items-center bg-stone-100/80 rounded-xl p-1 border border-stone-200/80 text-xs">
-            <button
-              type="button"
-              onClick={() => setScenario('dry_spell')}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-bold transition-all ${
-                settings.activeScenario === 'dry_spell'
-                  ? 'bg-white text-amber-800 shadow-sm ring-1 ring-stone-200/80'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-              title="Switch to Scenario 1: Dry Spell"
-            >
-              <Sun size={13} />
-              <span className="hidden sm:inline">Dry Spell</span>
-              <span className="sm:hidden">Dry</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setScenario('impending_storm')}
-              className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-bold transition-all ${
-                settings.activeScenario === 'impending_storm'
-                  ? 'bg-white text-sky-800 shadow-sm ring-1 ring-stone-200/80'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-              title="Switch to Scenario 2: Impending Storm"
-            >
-              <CloudRain size={13} />
-              <span className="hidden sm:inline">Storm</span>
-              <span className="sm:hidden">Rain</span>
-            </button>
-          </div>
-
           {/* Settings Nav Button */}
           <NavLink
             to="/settings"
@@ -83,7 +57,7 @@ export const Header: React.FC = () => {
                   : 'bg-white text-stone-600 border-stone-200/80 hover:bg-stone-50'
               }`
             }
-            aria-label="Settings"
+            aria-label={t('Settings')}
           >
             <Settings size={18} />
           </NavLink>

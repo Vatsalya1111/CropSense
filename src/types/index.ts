@@ -1,5 +1,3 @@
-export type ScenarioId = 'dry_spell' | 'impending_storm';
-
 export interface Farmer {
   id: string;
   name: string;
@@ -54,6 +52,8 @@ export interface WeatherData {
     lastUpdated: string;
   };
   forecast: WeatherDayForecast[];
+  dataSource: string;
+  isFallback: boolean;
 }
 
 export interface CropHealth {
@@ -64,8 +64,10 @@ export interface CropHealth {
   cropStage: string;
   observation: string;
   recommendedAction: string;
-  isDemoData: boolean;
   lastUpdated: string;
+  dataSource: string;
+  isFallback: boolean;
+  modelVersion: string;
 }
 
 export interface IrrigationRecommendation {
@@ -75,6 +77,9 @@ export interface IrrigationRecommendation {
   recommendedTime: string;
   reason: string;
   lastUpdated: string;
+  dataSource: string;
+  isFallback: boolean;
+  modelVersion: string;
 }
 
 export interface Advisory {
@@ -102,6 +107,5 @@ export interface Alert {
 export interface AppSettings {
   language: 'en' | 'hi';
   dataSaver: boolean;
-  demoMode: boolean;
-  activeScenario: ScenarioId;
+  theme: 'light' | 'dark';
 }

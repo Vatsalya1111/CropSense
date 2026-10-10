@@ -2,16 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '../../components/common/Card';
 import { advisoryService } from '../../services';
 import { Advisory } from '../../types';
-import { useApp } from '../../context/AppContext';
 import { ClipboardCheck, Clock, CheckCircle2, AlertCircle, HelpCircle } from 'lucide-react';
+import { useI18n } from '../../i18n';
 
 export const AdvisoryPage: React.FC = () => {
-  const { settings } = useApp();
+  const { t } = useI18n();
   const [advisories, setAdvisories] = useState<Advisory[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    advisoryService.getAdvisories(settings.activeScenario).then(setAdvisories);
-  }, [settings.activeScenario]);
+    advisoryService.getAdvisories().then(setAdvisories).catch(() => setError('Farm guidance is unavailable. Start the CropSense API and try again.'));
+  }, [t]);
+
+  if (error) return <div className="p-16 text-center text-red-700">{t(error)}</div>;
 
   return (
     <div className="space-y-7 max-w-5xl mx-auto">
@@ -19,13 +22,13 @@ export const AdvisoryPage: React.FC = () => {
       <div className="page-heading">
         <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800 uppercase tracking-wider mb-0.5">
           <ClipboardCheck size={14} className="text-emerald-700" />
-          <span>Field Guidance</span>
+          <span>{t('Field Guidance')}</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
-          What Should I Do on the Farm Today?
+          {t('What Should I Do on the Farm Today?')}
         </h2>
         <p className="text-sm text-stone-600 mt-1">
-          Simple daily checklist with timing and clear reasons for your wheat crop.
+          {t('Simple daily checklist with timing and clear reasons for your crop.')}
         </p>
       </div>
 
@@ -38,10 +41,10 @@ export const AdvisoryPage: React.FC = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/30 to-transparent flex flex-col justify-end p-5 text-white">
           <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider">
-            Daily Agronomy Advice
+            {t('Daily Agronomy Advice')}
           </span>
           <h3 className="text-lg sm:text-xl font-bold text-white mt-0.5">
-            {advisories.length} Action Tasks for Your Crop Today
+            {advisories.length} {t('Action Tasks for Your Crop Today')}
           </h3>
         </div>
       </div>
@@ -81,7 +84,7 @@ export const AdvisoryPage: React.FC = () => {
               <div className="p-4 bg-emerald-50/80 rounded-xl border border-emerald-200">
                 <div className="flex items-center gap-1.5 text-xs font-black text-emerald-900 uppercase tracking-wider mb-1">
                   <CheckCircle2 size={15} className="text-emerald-700" />
-                  <span>Action: What to Do</span>
+                  <span>{t('Action: What to Do')}</span>
                 </div>
                 <p className="text-emerald-950 font-bold text-base sm:text-lg leading-snug">
                   {item.whatFarmerShouldDo}
@@ -92,7 +95,7 @@ export const AdvisoryPage: React.FC = () => {
               <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-200/80 flex items-center gap-2.5">
                 <Clock size={16} className="text-stone-600 shrink-0" />
                 <div className="text-xs sm:text-sm">
-                  <span className="font-bold text-stone-900 mr-2">When:</span>
+                  <span className="font-bold text-stone-900 mr-2">{t('When:')}</span>
                   <span className="text-stone-800 font-semibold">{item.whenToDoIt}</span>
                 </div>
               </div>
@@ -102,7 +105,7 @@ export const AdvisoryPage: React.FC = () => {
                 <div className="p-3.5 bg-stone-50/70 rounded-xl border border-stone-100">
                   <div className="flex items-center gap-1 text-[11px] font-bold text-stone-500 uppercase tracking-wider mb-1">
                     <AlertCircle size={12} className="text-stone-400" />
-                    <span>What Is Happening</span>
+                    <span>{t('What Is Happening')}</span>
                   </div>
                   <p className="text-stone-700 leading-relaxed font-medium">{item.whatIsHappening}</p>
                 </div>
@@ -110,7 +113,7 @@ export const AdvisoryPage: React.FC = () => {
                 <div className="p-3.5 bg-stone-50/70 rounded-xl border border-stone-100">
                   <div className="flex items-center gap-1 text-[11px] font-bold text-stone-500 uppercase tracking-wider mb-1">
                     <HelpCircle size={12} className="text-stone-400" />
-                    <span>Why This Matters</span>
+                    <span>{t('Why This Matters')}</span>
                   </div>
                   <p className="text-stone-700 leading-relaxed font-medium">{item.why}</p>
                 </div>
