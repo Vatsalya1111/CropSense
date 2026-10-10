@@ -2,24 +2,36 @@
 @import "leaflet/dist/leaflet.css";
 
 :root {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Open Sans", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
   color: #1c2921;
   background: #f5f7f2;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-optical-sizing: auto;
   --agri-green: #26734d;
   --agri-green-dark: #185b3a;
   --agri-ink: #1c2921;
   --agri-muted: #68746c;
   --agri-border: #e3e9e2;
+  --page-bg: #f5f7f2;
+  --surface: #ffffff;
 }
 
 html {
   scroll-behavior: smooth;
-  background: #f5f7f2;
+  background: var(--page-bg);
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --agri-green: #8ed0a8;
+  --agri-green-dark: #b2e4c3;
+  --agri-ink: #edf5ef;
+  --agri-muted: #a9b7ad;
+  --agri-border: #34443a;
+  --page-bg: #121a15;
+  --surface: #1b261f;
 }
 
 body {
@@ -27,14 +39,49 @@ body {
   padding: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #f5f7f2;
+  background: var(--page-bg);
   color: var(--agri-ink);
+  font-family: "Open Sans", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
+  transition: background-color 260ms ease, color 260ms ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+.page-heading h2,
+.dashboard-welcome h2 {
+  font-family: "Volkhov", "Noto Sans Devanagari", Georgia, serif;
 }
 
 button,
 select,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+input,
+select,
+textarea,
+.rounded-2xl,
+.rounded-3xl,
+[class*="rounded-xl"] {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.2, 0.75, 0.3, 1);
+}
+
+button:active,
+a:active {
+  transform: scale(0.985);
+}
+
+a.bg-white:hover,
+.bg-white.rounded-2xl:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgb(33 54 39 / 0.09);
 }
 
 button:focus-visible,
@@ -52,25 +99,26 @@ input:focus-visible {
 
 .page-heading {
   padding-bottom: 0.1rem;
+  animation: page-enter 420ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
 }
 
 .page-heading h2 {
   color: var(--agri-ink);
   font-size: clamp(1.65rem, 4vw, 2.1rem);
-  font-weight: 750;
-  letter-spacing: -0.045em;
-  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
 }
 
 .page-heading > p {
   max-width: 44rem;
   color: var(--agri-muted);
   font-size: 0.95rem;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
 .dashboard-welcome h2 {
-  letter-spacing: -0.045em;
+  letter-spacing: -0.035em;
 }
 
 .touch-target {
@@ -78,10 +126,151 @@ input:focus-visible {
   min-width: 44px;
 }
 
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 640px) {
-  .page-heading > p {
-    font-size: 0.9rem;
-  }
+  .page-heading > p { font-size: 0.9rem; }
+}
+
+/* Keep Tailwind's existing light palette readable after the theme switch. */
+html[data-theme="dark"] body,
+html[data-theme="dark"] .bg-\[\#f5f7f2\],
+html[data-theme="dark"] .bg-\[\#fbfcf9\],
+html[data-theme="dark"] .bg-\[\#f7f9f5\] {
+  background-color: var(--page-bg) !important;
+}
+
+html[data-theme="dark"] [class*="bg-[#fbfcf9]"],
+html[data-theme="dark"] [class*="bg-[#f7f9f5]"] {
+  background-color: var(--surface) !important;
+}
+
+html[data-theme="dark"] .bg-white,
+html[data-theme="dark"] [class*="bg-white/"],
+html[data-theme="dark"] .bg-stone-50,
+html[data-theme="dark"] .bg-stone-100,
+html[data-theme="dark"] [class*="bg-stone-50/"],
+html[data-theme="dark"] [class*="bg-stone-100/"] {
+  background-color: var(--surface) !important;
+}
+
+html[data-theme="dark"] [class~="text-stone-900"],
+html[data-theme="dark"] [class~="text-stone-950"],
+html[data-theme="dark"] [class~="text-stone-800"] {
+  color: #edf5ef !important;
+}
+
+html[data-theme="dark"] [class~="text-stone-700"],
+html[data-theme="dark"] [class~="text-stone-600"],
+html[data-theme="dark"] [class~="text-stone-500"] {
+  color: #b5c2b9 !important;
+}
+
+html[data-theme="dark"] [class~="text-stone-400"] {
+  color: #91a197 !important;
+}
+
+/* Dark mode text tokens. Keep small labels and icon captions readable too. */
+html[data-theme="dark"] [class~="text-emerald-300"],
+html[data-theme="dark"] [class~="text-emerald-600"],
+html[data-theme="dark"] [class~="text-emerald-700"],
+html[data-theme="dark"] [class~="text-emerald-800"],
+html[data-theme="dark"] [class~="text-emerald-900"],
+html[data-theme="dark"] [class~="text-emerald-950"] {
+  color: #a9e6bd !important;
+}
+
+html[data-theme="dark"] [class~="text-amber-500"],
+html[data-theme="dark"] [class~="text-amber-600"],
+html[data-theme="dark"] [class~="text-amber-700"],
+html[data-theme="dark"] [class~="text-amber-800"],
+html[data-theme="dark"] [class~="text-amber-900"],
+html[data-theme="dark"] [class~="text-amber-950"] {
+  color: #f5d98d !important;
+}
+
+html[data-theme="dark"] [class~="text-sky-600"],
+html[data-theme="dark"] [class~="text-sky-800"],
+html[data-theme="dark"] [class~="text-sky-900"],
+html[data-theme="dark"] [class~="text-sky-950"] {
+  color: #a9def2 !important;
+}
+
+html[data-theme="dark"] [class~="text-red-600"],
+html[data-theme="dark"] [class~="text-red-700"],
+html[data-theme="dark"] [class~="text-red-800"],
+html[data-theme="dark"] [class~="text-red-900"],
+html[data-theme="dark"] [class~="text-red-950"] {
+  color: #ffaaa9 !important;
+}
+
+html[data-theme="dark"] [class*="border-stone-"],
+html[data-theme="dark"] [class*="border-\[\#e"] {
+  border-color: #34443a !important;
+}
+
+html[data-theme="dark"] [class*="bg-emerald-50"],
+html[data-theme="dark"] [class*="bg-emerald-100"],
+html[data-theme="dark"] [class*="bg-emerald-200"] {
+  background-color: #20382b !important;
+}
+
+html[data-theme="dark"] [class*="text-emerald-900"],
+html[data-theme="dark"] [class*="text-emerald-950"],
+html[data-theme="dark"] [class*="text-emerald-800"] {
+  color: #b8e7c8 !important;
+}
+
+html[data-theme="dark"] [class*="bg-amber-50"],
+html[data-theme="dark"] [class*="bg-amber-100"],
+html[data-theme="dark"] [class*="bg-amber-200"] {
+  background-color: #3a311e !important;
+}
+
+html[data-theme="dark"] [class*="text-amber-950"],
+html[data-theme="dark"] [class*="text-amber-900"],
+html[data-theme="dark"] [class*="text-amber-800"] {
+  color: #f1d694 !important;
+}
+
+html[data-theme="dark"] [class*="bg-sky-50"],
+html[data-theme="dark"] [class*="bg-sky-100"],
+html[data-theme="dark"] [class*="bg-sky-200"] {
+  background-color: #1c3440 !important;
+}
+
+html[data-theme="dark"] [class*="text-sky-950"],
+html[data-theme="dark"] [class*="text-sky-900"],
+html[data-theme="dark"] [class*="text-sky-800"] {
+  color: #b5e4f4 !important;
+}
+
+html[data-theme="dark"] [class*="bg-red-50"],
+html[data-theme="dark"] [class*="bg-red-100"],
+html[data-theme="dark"] [class*="bg-red-200"] {
+  background-color: #3b2425 !important;
+}
+
+html[data-theme="dark"] [class*="border-emerald-"],
+html[data-theme="dark"] [class*="border-amber-"],
+html[data-theme="dark"] [class*="border-sky-"],
+html[data-theme="dark"] [class*="border-red-"] {
+  border-color: #405449 !important;
+}
+
+html[data-theme="dark"] .shadow-\[0_-8px_24px_rgba\(33\,54\,39\,0\.06\)\] {
+  box-shadow: 0 -8px 24px rgb(0 0 0 / 0.28) !important;
+}
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  color: #edf5ef;
+  background-color: #1b261f;
+  border-color: #45564b;
 }
 
 @media (prefers-reduced-motion: reduce) {

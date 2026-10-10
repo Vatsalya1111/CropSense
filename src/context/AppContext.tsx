@@ -1,38 +1,40 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AppSettings, ScenarioId } from '../types';
+import { AppSettings } from '../types';
 import { getStoredSettings, saveStoredSettings } from '../services';
 
 interface AppContextType {
   settings: AppSettings;
-  setScenario: (scenario: ScenarioId) => void;
   updateSettings: (partial: Partial<AppSettings>) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [settings, setSettings] = useState<AppSettings>(() => getStoredSettings());
+  const [settings, setSettings] = useState<AppSettings>(() => {
+    const initial = getStoredSettings();
+    document.documentElement.dataset.theme = initial.theme;
+    document.documentElement.lang = initial.language;
+    return initial;
+  });
 
   useEffect(() => {
     saveStoredSettings(settings);
+    document.documentElement.dataset.theme = settings.theme;
+    document.documentElement.lang = settings.language;
   }, [settings]);
 
-  const setScenario = (scenario: ScenarioId) => {
-    setSettings((prev) => ({
-      ...prev,
-      activeScenario: scenario,
-    }));
-  };
-
   const updateSettings = (partial: Partial<AppSettings>) => {
-    setSettings((prev) => ({
-      ...prev,
-      ...partial,
-    }));
+    setSettings((prev) => {
+      const next = { ...prev, ...partial };
+      saveStoredSettings(next);
+      document.documentElement.dataset.theme = next.theme;
+      document.documentElement.lang = next.language;
+      return next;
+    });
   };
 
   return (
-    <AppContext.Provider value={{ settings, setScenario, updateSettings }}>
+    <AppContext.Provider value={{ settings, updateSettings }}>
       {children}
     </AppContext.Provider>
   );

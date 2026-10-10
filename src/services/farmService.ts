@@ -1,17 +1,12 @@
 import { Farm, Farmer } from '../types';
-import { mockFarm, mockFarmer } from '../data/mockData';
+import { apiGet } from './apiClient';
 
 export const farmService = {
   async getFarm(): Promise<Farm> {
-    // Simulated realistic async latency for future API swap
-    return new Promise((resolve) => {
-      setTimeout(() => resolve({ ...mockFarm }), 50);
-    });
+    return apiGet<Farm>('farm');
   },
 
   async getFarmer(): Promise<Farmer> {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve({ ...mockFarmer }), 50);
-    });
+    return apiGet<Farmer>('farmer');
   },
 };

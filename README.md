@@ -1,16 +1,30 @@
-# React + Vite
+# CropSense
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CropSense is a React dashboard backed by a small FastAPI service. The backend fetches weather for the sample farm, falls back to labeled sample weather when the provider is unavailable, and derives irrigation and crop-risk guidance from those inputs.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Install the frontend dependencies with `npm install` if needed. In one terminal, start the backend from the project root:
 
-## React Compiler
+```powershell
+python -m pip install -r backend/requirements.txt
+python -m uvicorn app.main:app --app-dir backend --reload
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+In another terminal, start the frontend:
 
-## Expanding the ESLint configuration
+```powershell
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The Vite development server proxies `/api` requests to `http://127.0.0.1:8000`. Set `VITE_API_BASE_URL` when the API is hosted elsewhere. The API health check is available at `/api/health`.
+
+Farm profile details and soil moisture currently use labeled sample inputs. Soil moisture is estimated until a sensor source is connected. The prediction thresholds live in `backend/app/predictions.py` so the initial baseline can be replaced by the trained model later.
+
+## Checks
+
+```powershell
+python -m unittest discover -s backend/tests
+npm run build
+npm run lint
+```

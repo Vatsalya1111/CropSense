@@ -2,16 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '../../components/common/Card';
 import { alertService } from '../../services';
 import { Alert } from '../../types';
-import { useApp } from '../../context/AppContext';
 import { Flame, CloudRain, Droplets, Bug, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { useI18n } from '../../i18n';
 
 export const AlertsPage: React.FC = () => {
-  const { settings } = useApp();
+  const { t } = useI18n();
   const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    alertService.getAlerts(settings.activeScenario).then(setAlerts);
-  }, [settings.activeScenario]);
+    alertService.getAlerts().then(setAlerts).catch(() => setError('Alerts are unavailable. Start the CropSense API and try again.'));
+  }, [t]);
+
+  if (error) return <div className="p-16 text-center text-red-700">{t(error)}</div>;
 
   const getAlertIcon = (type: Alert['type']) => {
     switch (type) {
@@ -30,40 +33,8 @@ export const AlertsPage: React.FC = () => {
   };
 
   const getActionBullets = (alert: Alert): string[] => {
-    if (alert.type === 'heavy_rainfall') {
-      return [
-        'Do not irrigate — save water and diesel',
-        'Clear field drainage channels and remove bund blockages',
-        'Inspect field bunds to prevent overflow and waterlogging',
-      ];
-    }
-    if (alert.type === 'extreme_heat') {
-      return [
-        'Complete field irrigation early before peak midday heat',
-        'Inspect field corners and edges for early crop wilting',
-        'Avoid foliar spray applications during high temperatures',
-      ];
-    }
-    if (alert.type === 'low_soil_moisture') {
-      return [
-        'Turn on drip/tube-well irrigation for at least 3 hours today',
-        'Check soil moisture at 15 cm depth after irrigating',
-        'Keep furrows damp to prevent dry soil cracking',
-      ];
-    }
-    if (alert.type === 'disease_pest_risk') {
-      return [
-        'Scout lower leaves for early fungal or rust spots after storm passes',
-        'Ensure proper drainage to reduce excess canopy wetness',
-        'Keep organic fungicide ready if leaf yellowing appears',
-      ];
-    }
-
-    const parts = alert.actionRequired
-      .split(/[.;]+/)
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
-    return parts.length > 0 ? parts : [alert.actionRequired];
+    const parts = alert.actionRequired.split(/[.;]+/).map((part) => part.trim()).filter(Boolean);
+    return parts.length ? parts : [alert.actionRequired];
   };
 
   return (
@@ -72,13 +43,13 @@ export const AlertsPage: React.FC = () => {
       <div className="page-heading">
         <div className="flex items-center gap-2 text-xs font-semibold text-red-800 uppercase tracking-wider mb-0.5">
           <AlertTriangle size={14} className="text-red-700" />
-          <span>Priority Warnings</span>
+          <span>{t('Priority Warnings')}</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
-          Is There Any Danger to My Crop?
+          {t('Is There Any Danger to My Crop?')}
         </h2>
         <p className="text-sm text-stone-600 mt-1">
-          High-priority weather and field warnings that require your attention today.
+          {t('High-priority weather and field warnings that require your attention today.')}
         </p>
       </div>
 
@@ -87,9 +58,9 @@ export const AlertsPage: React.FC = () => {
           <Card>
             <div className="text-center py-10">
               <CheckCircle2 size={36} className="mx-auto text-emerald-600 mb-2" />
-              <h3 className="font-bold text-stone-900 text-lg">All Clear in Your Field</h3>
+              <h3 className="font-bold text-stone-900 text-lg">{t('All Clear in Your Field')}</h3>
               <p className="text-xs sm:text-sm text-stone-500 mt-1 max-w-sm mx-auto">
-                No extreme weather or crop hazards detected for your wheat crop today.
+                {t('No extreme weather or crop hazards detected for your crop today.')}
               </p>
             </div>
           </Card>
@@ -122,7 +93,7 @@ export const AlertsPage: React.FC = () => {
                             isCritical ? 'bg-red-200 text-red-950' : 'bg-amber-200 text-amber-950'
                           }`}
                         >
-                          {isCritical ? 'Critical Warning' : 'Notice'}
+                          {isCritical ? t('Critical Warning') : t('Notice')}
                         </span>
                         <span className="text-xs text-stone-600 font-medium">{alert.timestamp}</span>
                       </div>
@@ -136,7 +107,7 @@ export const AlertsPage: React.FC = () => {
                 {/* What is happening (one-line plain explanation) */}
                 <div className="mt-3.5">
                   <span className="text-[11px] font-bold text-stone-500 uppercase tracking-wider block mb-0.5">
-                    What is happening:
+                    {t('What is happening:')}
                   </span>
                   <p className="text-sm sm:text-base text-stone-800 font-medium leading-relaxed">
                     {alert.message}
@@ -147,7 +118,7 @@ export const AlertsPage: React.FC = () => {
                 <div className="mt-4 p-4 bg-white/95 rounded-xl border border-stone-200/80 shadow-2xs">
                   <div className="flex items-center gap-1.5 text-xs font-black text-emerald-900 uppercase tracking-wider mb-2.5">
                     <CheckCircle2 size={16} className="text-emerald-700" />
-                    <span>What You Should Do Today:</span>
+                    <span>{t('What You Should Do Today:')}</span>
                   </div>
                   <ul className="space-y-2">
                     {actionBullets.map((bullet, idx) => (

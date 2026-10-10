@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   Home,
@@ -10,11 +10,10 @@ import {
   AlertTriangle,
   Settings,
   User,
-  Sun,
-  CloudRain,
 } from 'lucide-react';
-import { mockFarmer, mockFarm } from '../../data/mockData';
-import { useApp } from '../../context/AppContext';
+import { farmService } from '../../services';
+import { Farm, Farmer } from '../../types';
+import { useI18n } from '../../i18n';
 
 interface NavItem {
   label: string;
@@ -34,9 +33,19 @@ const navItems: NavItem[] = [
 ];
 
 export const Sidebar: React.FC = () => {
-  const { settings } = useApp();
-  const isDrySpell = settings.activeScenario === 'dry_spell';
+  const { t } = useI18n();
+  const [farmer, setFarmer] = useState<Farmer | null>(null);
+  const [farm, setFarm] = useState<Farm | null>(null);
 
+  useEffect(() => {
+    Promise.all([farmService.getFarmer(), farmService.getFarm()]).then(([currentFarmer, currentFarm]) => {
+      setFarmer(currentFarmer);
+      setFarm(currentFarm);
+    }).catch(() => {
+      setFarmer(null);
+      setFarm(null);
+    });
+  }, []);
   return (
     <aside className="hidden md:flex flex-col w-64 fixed left-0 top-0 bottom-0 bg-[#fbfcf9] text-stone-700 border-r border-[#e5ebe3] z-30">
       {/* Brand Header */}
@@ -45,31 +54,13 @@ export const Sidebar: React.FC = () => {
           <Sprout size={24} />
         </div>
         <div>
-          <h2 className="text-lg font-extrabold text-stone-900 tracking-tight">AgriSense</h2>
-          <p className="text-[11px] text-emerald-800 font-semibold">Farmer Decision Support</p>
-        </div>
-      </div>
-
-      {/* Scenario Indicator in Sidebar */}
-      <div className="mx-4 mt-5 p-3 rounded-xl bg-[#f2f6ef] border border-[#e5ebe3] text-xs">
-        <p className="text-stone-500 font-bold uppercase tracking-wider text-[10px]">Active Demo Condition</p>
-        <div className="flex items-center gap-1.5 mt-1.5 font-semibold text-stone-800">
-          {isDrySpell ? (
-            <>
-              <Sun size={15} className="text-amber-600" />
-              <span>Scenario 1: Dry Spell</span>
-            </>
-          ) : (
-            <>
-              <CloudRain size={15} className="text-sky-700" />
-              <span>Scenario 2: Rain Storm</span>
-            </>
-          )}
+          <h2 className="text-lg font-extrabold text-stone-900 tracking-tight">{t('AgriSense')}</h2>
+          <p className="text-[11px] text-emerald-800 font-semibold">{t('Farmer Decision Support')}</p>
         </div>
       </div>
 
       {/* Navigation List */}
-      <nav className="flex-1 px-3 py-5 space-y-1.5 overflow-y-auto" aria-label="Main navigation">
+      <nav className="flex-1 px-3 py-5 space-y-1.5 overflow-y-auto" aria-label={t('Main navigation')}>
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -86,7 +77,7 @@ export const Sidebar: React.FC = () => {
               }
             >
               <Icon size={18} />
-              <span>{item.label}</span>
+              <span>{t(item.label)}</span>
             </NavLink>
           );
         })}
@@ -99,8 +90,8 @@ export const Sidebar: React.FC = () => {
             <User size={18} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-stone-800 truncate">{mockFarmer.name}</p>
-            <p className="text-xs text-stone-500 truncate">{mockFarm.crop} • {mockFarm.area} {mockFarm.areaUnit}</p>
+            <p className="text-sm font-bold text-stone-800 truncate">{farmer?.name || t('Farmer profile unavailable')}</p>
+            <p className="text-xs text-stone-500 truncate">{farm ? `${farm.crop} · ${farm.area} ${farm.areaUnit}` : t('Farm details unavailable')}</p>
           </div>
         </div>
       </div>
