@@ -225,13 +225,21 @@ CropSense/
 ├── backend/
 │   ├── app/
 │   │   ├── __init__.py
+│   │   ├── crop_config.py
 │   │   ├── data.py
 │   │   ├── main.py
 │   │   ├── predictions.py
-│   │   ├── weather.py
-│   │   └── __init__.py
+│   │   └── weather.py
 │   ├── requirements.txt
+│   ├── ml/
+│   │   ├── __init__.py
+│   │   ├── evaluate.py
+│   │   ├── features.py
+│   │   ├── README.md
+│   │   ├── serve.py
+│   │   └── train.py
 │   └── tests/
+│       ├── test_ml.py
 │       └── test_predictions.py
 ├── public/
 ├── src/

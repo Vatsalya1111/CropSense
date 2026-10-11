@@ -153,7 +153,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, help="Optional metrics JSON output path")
     args = parser.parse_args()
     metrics = evaluate_frame(pd.read_csv(args.data))
-    output_path = args.output or args.model.with_name("metrics.json")
+    output_path = args.output or args.model.with_name("evaluation_metrics.json")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     print(f"Wrote evaluation metrics to {output_path}")
