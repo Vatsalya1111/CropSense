@@ -80,7 +80,6 @@ This keeps the system easy to inspect, test, and evolve.
 ### 1. Create and activate a Python environment
 
 ```powershell
-cd "C:\Users\saile\Documents\AI projects\CropSense"
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
