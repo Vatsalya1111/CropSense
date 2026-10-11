@@ -1,6 +1,6 @@
 import { AppSettings } from '../types';
 
-const STORAGE_KEY_SETTINGS = 'agrisense_settings';
+const STORAGE_KEY_SETTINGS = 'cropsense_settings';
 
 export const DEFAULT_SETTINGS: AppSettings = {
   language: 'en',
@@ -32,4 +32,3 @@ export function saveStoredSettings(settings: AppSettings): void {
     // Ignore storage errors in browser environments that restrict local storage.
   }
 }
-

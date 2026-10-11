@@ -29,7 +29,7 @@ function Sidebar() {
         </div>
 
         <div>
-          <h2>AgriSense</h2>
+          <h2>CropSense</h2>
           <span>Smart farming</span>
         </div>
       </div>

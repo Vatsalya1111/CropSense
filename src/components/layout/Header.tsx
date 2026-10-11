@@ -20,7 +20,7 @@ export const Header: React.FC = () => {
   const location = useLocation();
   const { t } = useI18n();
   const [farm, setFarm] = useState<Farm | null>(null);
-  const currentTitle = t(PAGE_TITLES[location.pathname] || 'AgriSense');
+  const currentTitle = t(PAGE_TITLES[location.pathname] || 'CropSense');
 
   useEffect(() => {
     farmService.getFarm().then(setFarm).catch(() => setFarm(null));

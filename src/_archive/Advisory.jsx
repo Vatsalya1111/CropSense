@@ -403,7 +403,7 @@ function Advisory() {
         <div>
 
           <p className="eyebrow">
-            AGRISENSE ADVISORY ENGINE
+            CROPSENSE ADVISORY ENGINE
           </p>
 
           <h3>
@@ -412,7 +412,7 @@ function Advisory() {
           </h3>
 
           <p>
-            AgriSense combines Panchayat-level
+            CropSense combines Panchayat-level
             weather predictions, farm information,
             crop conditions and sensor observations
             to generate practical recommendations

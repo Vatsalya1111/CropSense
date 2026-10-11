@@ -17,7 +17,7 @@ function Settings() {
           <p className="eyebrow">PREFERENCES</p>
           <h1>Settings</h1>
           <p className="page-subtitle">
-            Customize how AgriSense works for you.
+            Customize how CropSense works for you.
           </p>
         </div>
       </header>
