@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useApp } from './context/AppContext';
 
 const hindi: Record<string, string> = {
-  AgriSense: 'एग्रीसेंस', 'Today on My Farm': 'आज मेरे खेत में', 'My Farm Profile': 'मेरे खेत की जानकारी',
+  CropSense: 'क्रॉपसेंस', 'Today on My Farm': 'आज मेरे खेत में', 'My Farm Profile': 'मेरे खेत की जानकारी',
   'Weather Forecast': 'मौसम का पूर्वानुमान', 'Crop Health': 'फसल का स्वास्थ्य', 'Water & Irrigation': 'पानी और सिंचाई',
   'Daily Farm Advice': 'आज की खेती सलाह', 'Farm Warnings': 'खेत की चेतावनियाँ', 'App Settings': 'ऐप सेटिंग्स',
   Home: 'होम', Farm: 'खेत', 'My Farm': 'मेरा खेत', Weather: 'मौसम', Advisory: 'सलाह', Alerts: 'चेतावनियाँ', Settings: 'सेटिंग्स',

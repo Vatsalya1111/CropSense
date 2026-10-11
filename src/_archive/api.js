@@ -5,7 +5,7 @@ import {
 } from "../data/mockData";
 
 /*
-  AgriSense API Layer
+  CropSense API Layer
 
   For now we use mock data.
   Later this file will communicate with Sailesh's backend.

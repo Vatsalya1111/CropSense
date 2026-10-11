@@ -513,7 +513,7 @@ function Map() {
           </h3>
 
           <p>
-            AgriSense aims to downscale weather
+            CropSense aims to downscale weather
             information from broader forecasts to
             Panchayat-level predictions, helping
             farmers receive more relevant,

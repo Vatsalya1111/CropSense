@@ -7,6 +7,9 @@ CropSense is a React dashboard backed by a small FastAPI service. The backend fe
 Install the frontend dependencies with `npm install` if needed. In one terminal, start the backend from the project root:
 
 ```powershell
+python -m venv .venv
+.venv\Scripts\activate.bat (cmd prompt) / 
+.venv\Scripts\Activate.ps1 (Powershell)
 python -m pip install -r backend/requirements.txt
 python -m uvicorn app.main:app --app-dir backend --reload
 ```

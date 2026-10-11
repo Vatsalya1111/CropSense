@@ -54,7 +54,7 @@ export const Sidebar: React.FC = () => {
           <Sprout size={24} />
         </div>
         <div>
-          <h2 className="text-lg font-extrabold text-stone-900 tracking-tight">{t('AgriSense')}</h2>
+          <h2 className="text-lg font-extrabold text-stone-900 tracking-tight">{t('CropSense')}</h2>
           <p className="text-[11px] text-emerald-800 font-semibold">{t('Farmer Decision Support')}</p>
         </div>
       </div>
