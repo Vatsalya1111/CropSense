@@ -12,6 +12,13 @@ from .data import FARM, FARMER, FALLBACK_SOIL_MOISTURE
 from .predictions import build_advisories, build_alerts, predict
 from .weather import get_weather
 
+try:
+    # Uvicorn loads this module as top-level ``app`` with ``--app-dir backend``.
+    from ml.serve import refine_weather
+except ImportError:
+    # Tests and package imports may load it as ``backend.app.main`` instead.
+    from ..ml.serve import refine_weather
+
 app = FastAPI(title="CropSense API", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
@@ -33,7 +40,8 @@ async def current_weather() -> dict:
     async with _weather_lock:
         now = datetime.now(timezone.utc)
         if _weather_cache is None or _weather_cache_until is None or now >= _weather_cache_until:
-            _weather_cache = await asyncio.to_thread(get_weather)
+            raw_weather = await asyncio.to_thread(get_weather)
+            _weather_cache = refine_weather(raw_weather, FARM)
             _weather_cache_until = now + timedelta(minutes=10)
     return _weather_cache
 

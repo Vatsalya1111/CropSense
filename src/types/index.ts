@@ -15,6 +15,7 @@ export interface Farm {
   location: {
     lat: number;
     lng: number;
+    elevationM?: number;
     village: string;
     district: string;
     state: string;
@@ -54,6 +55,9 @@ export interface WeatherData {
   forecast: WeatherDayForecast[];
   dataSource: string;
   isFallback: boolean;
+  modelVersion?: string;
+  correctionApplied?: boolean;
+  correctedFields?: string[];
 }
 
 export interface CropHealth {
