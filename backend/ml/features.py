@@ -14,7 +14,6 @@ INPUT_COLUMNS = (
     "forecast_lead_days",
     "forecast_temp_max_c",
     "forecast_temp_min_c",
-    "forecast_rain_probability_pct",
     "forecast_precipitation_mm",
 )
 
@@ -36,7 +35,6 @@ def build_features(rows: pd.DataFrame) -> pd.DataFrame:
             "forecast_lead_days": rows["forecast_lead_days"].astype(float),
             "forecast_temp_max_c": rows["forecast_temp_max_c"].astype(float),
             "forecast_temp_min_c": rows["forecast_temp_min_c"].astype(float),
-            "forecast_rain_probability_pct": rows["forecast_rain_probability_pct"].astype(float),
             "forecast_precipitation_mm": rows["forecast_precipitation_mm"].astype(float),
             "day_of_year_sin": np.sin(2 * np.pi * day_of_year / 365.25),
             "day_of_year_cos": np.cos(2 * np.pi * day_of_year / 365.25),
