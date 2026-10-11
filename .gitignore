@@ -14,6 +14,8 @@ __pycache__/
 dist
 dist-ssr
 *.local
+backend/ml/data/
+backend/ml/artifacts/*.joblib
 
 # Editor directories and files
 .vscode/*

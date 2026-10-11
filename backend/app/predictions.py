@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from math import ceil
 
+from .crop_config import get_crop_thresholds
+
 
 def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, language: str = "en") -> dict:
     """Return derived irrigation and crop-health outputs from normalized inputs.
@@ -19,17 +21,18 @@ def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, l
     rain_probability = max((day["rainProbability"] for day in next_two_days), default=0)
     temperature = current["temperature"]
     humidity = current["humidity"]
+    thresholds = get_crop_thresholds(farm.get("crop", ""), farm.get("cropStage", ""))
     weather_fallback = weather["isFallback"]
     inputs_fallback = weather_fallback or soil_source != "sensor"
     now = datetime.now(timezone.utc).isoformat()
     hindi = language == "hi"
 
-    if expected_rain >= 10 and rain_probability >= 50:
+    if expected_rain >= thresholds["irrigation_rainfall_mm"] and rain_probability >= thresholds["irrigation_rain_probability"]:
         status = "Do not irrigate"
         action = "सिंचाई रोकें और खेत की जल निकासी जाँचें।" if hindi else "Pause irrigation and check that field drainage is clear."
         timing = "अनुमानित बारिश के बाद फिर जाँचें" if hindi else "Review after the expected rainfall"
         reason = f"अगले दो दिनों में {expected_rain:.1f} मिमी बारिश का अनुमान है।" if hindi else f"The forecast shows {expected_rain:.1f} mm of rain over the next two days."
-    elif soil_moisture < 25:
+    elif soil_moisture < thresholds["soil_moisture_irrigate_below"]:
         status = "Irrigate immediately"
         action = "ठंडे समय में सुबह या शाम खेत में पानी दें।" if hindi else "Water the field during the cooler morning or evening hours."
         timing = "सुबह जल्दी या शाम 5 बजे के बाद" if hindi else "Early morning or after 5:00 PM"
@@ -43,9 +46,9 @@ def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, l
     score = 100
     if temperature > 30:
         score -= min(25, ceil((temperature - 30) * 2))
-    if soil_moisture < 35:
-        score -= min(30, ceil((35 - soil_moisture) * 1.5))
-    if humidity > 85 and expected_rain >= 10:
+    if soil_moisture < thresholds["soil_moisture_stress_below"]:
+        score -= min(30, ceil((thresholds["soil_moisture_stress_below"] - soil_moisture) * 1.5))
+    if humidity > thresholds["wet_weather_humidity"] and expected_rain >= thresholds["wet_weather_rainfall_mm"]:
         score -= 10
     score = max(0, min(100, score))
     if score >= 85:
@@ -62,9 +65,11 @@ def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, l
         trend = "declining"
 
     risks = []
-    if temperature >= 35 or (temperature >= 32 and soil_moisture < 30):
+    if temperature >= thresholds["severe_heat_temperature"] or (
+        temperature >= thresholds["heat_stress_temperature"] and soil_moisture < 30
+    ):
         risks.append("heat and moisture stress")
-    if humidity >= 85 and expected_rain >= 10:
+    if humidity >= thresholds["wet_weather_humidity"] and expected_rain >= thresholds["wet_weather_rainfall_mm"]:
         risks.append("wet-weather crop disease conditions")
     if hindi:
         observation = (

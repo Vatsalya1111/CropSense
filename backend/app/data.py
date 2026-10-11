@@ -2,36 +2,37 @@
 
 FARMER = {
     "id": "farmer_01",
-    "name": "Ramesh Patel",
+    "name": "Ramesh Gowda",
     "phone": "+91 98765 43210",
-    "village": "Rampur",
-    "district": "Sitapur",
-    "state": "Uttar Pradesh",
+    "village": "Srirangapatna",
+    "district": "Mandya",
+    "state": "Karnataka",
     "preferredLanguage": "en",
 }
 
 FARM = {
     "id": "farm_01",
     "farmerId": FARMER["id"],
-    "name": "Rampur Adarsh Khet",
+    "name": "Mandya Demo Farm",
     "location": {
-        "lat": 27.5645,
-        "lng": 80.6789,
-        "village": "Rampur",
-        "district": "Sitapur",
-        "state": "Uttar Pradesh",
+        "lat": 12.4228,
+        "lng": 76.6844,
+        "elevationM": 679,
+        "village": "Srirangapatna",
+        "district": "Mandya",
+        "state": "Karnataka",
     },
     "area": 3.5,
     "areaUnit": "acres",
-    "crop": "Wheat (HD-2967)",
-    "cropStage": "Flowering & Grain Filling",
+    "crop": "Ragi",
+    "cropStage": "Vegetative",
     "soilType": "Sandy Loam",
     "irrigationType": "Drip & Furrow",
     "boundary": [
-        [27.5652, 80.6775],
-        [27.5658, 80.6802],
-        [27.5638, 80.6806],
-        [27.5632, 80.6780],
+        [12.4235, 76.6836],
+        [12.4241, 76.6854],
+        [12.4220, 76.6858],
+        [12.4216, 76.6839],
     ],
 }
 
