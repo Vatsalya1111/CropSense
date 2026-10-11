@@ -58,7 +58,6 @@ def refine_weather(
                     "forecast_lead_days": lead,
                     "forecast_temp_max_c": day["tempMax"],
                     "forecast_temp_min_c": day["tempMin"],
-                    "forecast_rain_probability_pct": day["rainProbability"],
                     "forecast_precipitation_mm": day["expectedRainfall"],
                 }
                 for lead, day in enumerate(weather["forecast"])

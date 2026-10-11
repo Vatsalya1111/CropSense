@@ -6,6 +6,7 @@ import pandas as pd
 
 from backend.ml.evaluate import promotion_gate
 from backend.ml.features import build_features
+from backend.ml.prepare_data import _daily_forecasts, _observations
 from backend.ml.serve import MODEL_VERSION, refine_weather
 from backend.app.data import FARM
 from backend.app.weather import fallback_weather
@@ -22,7 +23,6 @@ class FeatureTests(unittest.TestCase):
                 "forecast_lead_days": 1,
                 "forecast_temp_max_c": 31,
                 "forecast_temp_min_c": 21,
-                "forecast_rain_probability_pct": 35,
                 "forecast_precipitation_mm": 2,
                 "observed_temp_max_c": 30,
                 "location_id": "mandya",
@@ -35,6 +35,34 @@ class FeatureTests(unittest.TestCase):
         self.assertNotIn("observed_temp_max_c", features.columns)
         self.assertNotIn("location_id", features.columns)
         self.assertTrue(all(pd.api.types.is_numeric_dtype(dtype) for dtype in features.dtypes))
+
+    def test_previous_runs_aggregation_preserves_each_lead(self):
+        hours = [f"2025-06-01T{hour:02d}:00" for hour in range(24)]
+        hourly = {"time": hours}
+        for lead in range(5):
+            suffix = f"_previous_day{lead}" if lead else ""
+            hourly[f"temperature_2m{suffix}"] = [20 + lead] * 23 + [30 + lead]
+            hourly[f"precipitation{suffix}"] = [0.1] * 24
+
+        daily = _daily_forecasts({"hourly": hourly})
+
+        self.assertEqual(len(daily), 5)
+        self.assertEqual(daily[("2025-06-01", 3)]["forecast_temp_max_c"], 33)
+        self.assertAlmostEqual(daily[("2025-06-01", 3)]["forecast_precipitation_mm"], 2.4)
+
+    def test_nasa_power_observation_parser_reads_parameter_date_maps(self):
+        observations = _observations({
+            "properties": {
+                "parameter": {
+                    "T2M_MAX": {"20250601": 30.5},
+                    "T2M_MIN": {"20250601": 20.5},
+                    "PRECTOTCORR": {"20250601": 2.7},
+                }
+            }
+        })
+
+        self.assertEqual(observations["2025-06-01"]["observed_temp_max_c"], 30.5)
+        self.assertEqual(observations["2025-06-01"]["observed_precipitation_mm"], 2.7)
 
 
 class WeatherServingTests(unittest.TestCase):

@@ -13,11 +13,35 @@ features. Gridded truth is a proxy, not a farm-gauge measurement.
 
 Required columns:
 
-`date,location_id,latitude,longitude,elevation_m,forecast_lead_days,forecast_temp_max_c,forecast_temp_min_c,forecast_rain_probability_pct,forecast_precipitation_mm,observed_temp_max_c,observed_temp_min_c,observed_precipitation_mm`
+`date,location_id,latitude,longitude,elevation_m,forecast_lead_days,forecast_temp_max_c,forecast_temp_min_c,forecast_precipitation_mm,observed_temp_max_c,observed_temp_min_c,observed_precipitation_mm`
 
 `location_id` is used only for leave-one-location-out evaluation, never as a
 model feature. Features are created only by `features.build_features()` for
 both training and eventual serving.
+
+`prepare_data.py` fetches fixed lead-time forecasts from Open-Meteo Previous
+Runs and gridded daily targets from NASA POWER. It uses forecast precipitation
+amount as the rain model input because precipitation-probability values are not
+populated in the Previous Runs archive for these locations/leads. The model
+still predicts rainy-day occurrence (at least 2.5 mm) and the live adapter
+converts that classifier probability into the response rain probability.
+The prepared dataset currently covers 2024-01-01 through 2025-12-31 for
+Srirangapatna/Mandya, Mysuru, Bengaluru, and Hassan. Forecasts are aggregated
+from hourly values in `Asia/Kolkata`; NASA POWER's `T2M_MAX`, `T2M_MIN`, and
+`PRECTOTCORR` provide daily proxy targets. See the [Open-Meteo Previous Runs
+API](https://open-meteo.com/en/docs/previous-runs-api) and [NASA POWER Daily
+API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/) for source
+definitions and limitations.
+
+Regenerate the default two-year, four-location dataset from the repository
+root with:
+
+```powershell
+python -m backend.ml.prepare_data
+```
+
+To select a period or output path, pass `--start-date`, `--end-date`, and/or
+`--output`. The dataset is written under the ignored `backend/ml/data/` folder.
 
 ## Train and evaluate
 

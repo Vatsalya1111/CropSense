@@ -81,7 +81,7 @@ def evaluate_frame(frame: pd.DataFrame) -> dict:
     # Validate raw labels/group keys explicitly; build_features validates model inputs.
     raw_required = set(REQUIRED_COLUMNS) | {
         "date", "latitude", "longitude", "elevation_m", "forecast_lead_days",
-        "forecast_temp_max_c", "forecast_temp_min_c", "forecast_rain_probability_pct", "forecast_precipitation_mm",
+        "forecast_temp_max_c", "forecast_temp_min_c", "forecast_precipitation_mm",
     }
     missing = sorted(raw_required - set(frame.columns))
     if missing:

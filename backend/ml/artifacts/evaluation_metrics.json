@@ -1,0 +1,151 @@
+{
+  "model_version": "cropsense-weather-v1",
+  "rainy_day_threshold_mm": 2.5,
+  "row_count": 14292,
+  "time_ordered_holdout": {
+    "temp_max": {
+      "raw_mae": 1.7654,
+      "raw_rmse": 2.128,
+      "corrected_mae": 1.3022,
+      "corrected_rmse": 1.5862
+    },
+    "temp_min": {
+      "raw_mae": 0.8778,
+      "raw_rmse": 1.1531,
+      "corrected_mae": 0.8943,
+      "corrected_rmse": 1.1925
+    },
+    "rain_occurrence": {
+      "raw_precision": 0.5685,
+      "raw_recall": 0.563,
+      "raw_f1": 0.5657,
+      "corrected_precision": 0.7018,
+      "corrected_recall": 0.4932,
+      "corrected_f1": 0.5792
+    }
+  },
+  "leave_one_location_out": {
+    "bengaluru": {
+      "temp_max": {
+        "raw_mae": 1.9763,
+        "raw_rmse": 2.3544,
+        "corrected_mae": 1.1172,
+        "corrected_rmse": 1.3904
+      },
+      "temp_min": {
+        "raw_mae": 0.8918,
+        "raw_rmse": 1.1826,
+        "corrected_mae": 0.9518,
+        "corrected_rmse": 1.1929
+      },
+      "rain_occurrence": {
+        "raw_precision": 0.6398,
+        "raw_recall": 0.6308,
+        "raw_f1": 0.6353,
+        "corrected_precision": 0.7959,
+        "corrected_recall": 0.3645,
+        "corrected_f1": 0.5
+      }
+    },
+    "hassan": {
+      "temp_max": {
+        "raw_mae": 1.9837,
+        "raw_rmse": 2.3304,
+        "corrected_mae": 1.0758,
+        "corrected_rmse": 1.418
+      },
+      "temp_min": {
+        "raw_mae": 0.887,
+        "raw_rmse": 1.1463,
+        "corrected_mae": 0.8605,
+        "corrected_rmse": 1.1026
+      },
+      "rain_occurrence": {
+        "raw_precision": 0.777,
+        "raw_recall": 0.4736,
+        "raw_f1": 0.5885,
+        "corrected_precision": 0.8345,
+        "corrected_recall": 0.476,
+        "corrected_f1": 0.6062
+      }
+    },
+    "mysuru": {
+      "temp_max": {
+        "raw_mae": 1.7464,
+        "raw_rmse": 2.1234,
+        "corrected_mae": 1.1756,
+        "corrected_rmse": 1.5255
+      },
+      "temp_min": {
+        "raw_mae": 0.9233,
+        "raw_rmse": 1.2154,
+        "corrected_mae": 0.9786,
+        "corrected_rmse": 1.2296
+      },
+      "rain_occurrence": {
+        "raw_precision": 0.6667,
+        "raw_recall": 0.5577,
+        "raw_f1": 0.6073,
+        "corrected_precision": 0.7899,
+        "corrected_recall": 0.3662,
+        "corrected_f1": 0.5004
+      }
+    },
+    "srirangapatna_mandya": {
+      "temp_max": {
+        "raw_mae": 1.695,
+        "raw_rmse": 2.0615,
+        "corrected_mae": 1.1727,
+        "corrected_rmse": 1.4916
+      },
+      "temp_min": {
+        "raw_mae": 1.2286,
+        "raw_rmse": 1.5167,
+        "corrected_mae": 0.9855,
+        "corrected_rmse": 1.2521
+      },
+      "rain_occurrence": {
+        "raw_precision": 0.6597,
+        "raw_recall": 0.5644,
+        "raw_f1": 0.6083,
+        "corrected_precision": 0.6606,
+        "corrected_recall": 0.6473,
+        "corrected_f1": 0.6538
+      }
+    }
+  },
+  "leave_one_location_out_average": {
+    "temp_max": {
+      "raw_mae": 1.8503,
+      "raw_rmse": 2.2174,
+      "corrected_mae": 1.1353,
+      "corrected_rmse": 1.4564
+    },
+    "temp_min": {
+      "raw_mae": 0.9827,
+      "raw_rmse": 1.2652,
+      "corrected_mae": 0.9441,
+      "corrected_rmse": 1.1943
+    },
+    "rain_occurrence": {
+      "raw_precision": 0.6858,
+      "raw_recall": 0.5566,
+      "raw_f1": 0.6099,
+      "corrected_precision": 0.7702,
+      "corrected_recall": 0.4635,
+      "corrected_f1": 0.5651
+    }
+  },
+  "limitations": "Evaluation uses gridded proxy truth, not on-farm gauge or sensor observations.",
+  "promotion_gate": {
+    "passed": false,
+    "checks": {
+      "time_ordered_holdout_temp_max_mae": true,
+      "time_ordered_holdout_temp_min_mae": false,
+      "time_ordered_holdout_rain_f1": true,
+      "leave_one_location_out_average_temp_max_mae": true,
+      "leave_one_location_out_average_temp_min_mae": true,
+      "leave_one_location_out_average_rain_f1": false
+    }
+  }
+}
