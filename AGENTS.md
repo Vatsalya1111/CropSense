@@ -6,7 +6,7 @@ Guidance for AI coding agents working on CropSense. Read this before changing co
 
 CropSense is a hyperlocal agrometeorological advisory system for Karnataka farmers. It turns coarse weather forecasts into corrected local forecasts, then into crop-aware actions: irrigation, spraying, alerts, advisories.
 
-Pipeline: `get_weather()` (Open-Meteo) → `refine_weather()` (ML, being added) → `predict()` (rules) → alerts and advisories → React dashboard.
+Pipeline: `get_weather()` (Open-Meteo) → `refine_weather()` (optional validated ML correction) → `predict()` (crop-aware rules) → alerts and advisories → React dashboard.
 
 The forecast model and the advisory logic are deliberately separate. The ML model corrects weather values. It does not decide irrigation or crop health.
 
@@ -17,7 +17,7 @@ The forecast model and the advisory logic are deliberately separate. The ML mode
 - `backend/app/predictions.py`: `predict()`, `build_alerts()`, `build_advisories()`
 - `backend/app/data.py`: sample farmer and farm profile, fallback soil moisture
 - `backend/tests/`: unittest suite
-- `backend/ml/` (planned): `features.py`, `train.py`, `evaluate.py`, data, model artifacts
+- `backend/ml/`: shared feature builder, historical data preparation, evaluation, training, optional serving adapter, and evaluation artifacts
 - `src/`: React + TypeScript + Vite frontend; API access only through `src/services/`
 
 ## Commands
@@ -26,7 +26,7 @@ Run from the repo root. The README uses PowerShell on Windows.
 
 - Backend: `python -m uvicorn app.main:app --app-dir backend --reload` (port 8000)
 - Frontend: `npm run dev` (port 5173, proxies `/api` to 8000)
-- Tests: `python -m unittest backend.tests.test_predictions`
+- Tests: `python -m unittest discover -s backend/tests`
 
 Run the tests after every backend change. Add tests in the same unittest style, with `unittest.mock.patch` for network calls. Tests must never hit the network.
 
@@ -54,10 +54,11 @@ Follow the existing pattern in `weather.py`: on any provider or model failure, d
 
 ## Known gaps (current state)
 
-- Sample farm in `data.py` is Sitapur, UP, wheat. The project and model are Karnataka. Change the farm to a Karnataka location with an elevation field.
-- `FALLBACK_SOIL_MOISTURE` is a constant 32, so "Irrigate immediately" (below 25) can never fire.
-- `predict()` ignores crop type and stage. Thresholds belong in a crop config, not inline.
-- `normalize_weather()` assumes index 0 of the daily arrays is today. Adding `past_days` to the request breaks this unless past and future are split first.
+- `FALLBACK_SOIL_MOISTURE` is an estimated constant of 32; without live sensors, the below-25 immediate irrigation threshold cannot be triggered from this fallback input.
+- Crop thresholds currently include only the Ragi vegetative stage; other crops and stages use the generic baseline.
+- The evaluation artifact currently fails its promotion gate. The API therefore keeps raw forecasts until a candidate improves both temperature MAE measures and rain F1 on the required time and location splits.
+- Training labels use gridded NASA POWER proxy data, not on-farm gauges or sensors; farm-level accuracy has not been established.
+- `normalize_weather()` assumes index 0 of the daily arrays is today. Adding `past_days` to the request requires splitting past and future arrays first.
 - UI languages are English and Hindi only. Kannada is not supported yet.
 
 ## Out of scope for now
