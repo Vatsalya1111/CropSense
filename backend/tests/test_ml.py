@@ -6,7 +6,7 @@ import pandas as pd
 
 from backend.ml.evaluate import promotion_gate
 from backend.ml.features import build_features
-from backend.ml.prepare_data import _daily_forecasts, _observations
+from backend.ml.prepare_data import _daily_forecasts, _observations, _power_date_to_local_date
 from backend.ml.serve import MODEL_VERSION, refine_weather
 from backend.app.data import FARM
 from backend.app.weather import fallback_weather
@@ -38,17 +38,36 @@ class FeatureTests(unittest.TestCase):
 
     def test_previous_runs_aggregation_preserves_each_lead(self):
         hours = [f"2025-06-01T{hour:02d}:00" for hour in range(24)]
+        hours.append("2025-06-02T00:00")
         hourly = {"time": hours}
         for lead in range(5):
             suffix = f"_previous_day{lead}" if lead else ""
-            hourly[f"temperature_2m{suffix}"] = [20 + lead] * 23 + [30 + lead]
-            hourly[f"precipitation{suffix}"] = [0.1] * 24
+            hourly[f"temperature_2m{suffix}"] = [20 + lead] * 23 + [30 + lead, 40 + lead]
+            hourly[f"precipitation{suffix}"] = [0.1] * 25
 
         daily = _daily_forecasts({"hourly": hourly})
 
         self.assertEqual(len(daily), 5)
         self.assertEqual(daily[("2025-06-01", 3)]["forecast_temp_max_c"], 33)
         self.assertAlmostEqual(daily[("2025-06-01", 3)]["forecast_precipitation_mm"], 2.4)
+
+    def test_precipitation_preceding_hour_uses_local_day_boundary(self):
+        hours = [
+            f"2025-05-31T{hour:02d}:00" for hour in range(24)
+        ] + [
+            f"2025-06-01T{hour:02d}:00" for hour in range(24)
+        ] + ["2025-06-02T00:00"]
+        hourly = {
+            "time": hours,
+            "temperature_2m": [20] * len(hours),
+            "precipitation": [0.1] * len(hours),
+        }
+        hourly["precipitation"][24] = 0.6
+
+        daily = _daily_forecasts({"hourly": hourly})
+
+        self.assertAlmostEqual(daily[("2025-05-31", 0)]["forecast_precipitation_mm"], 2.9)
+        self.assertAlmostEqual(daily[("2025-06-01", 0)]["forecast_precipitation_mm"], 2.4)
 
     def test_nasa_power_observation_parser_reads_parameter_date_maps(self):
         observations = _observations({
@@ -63,6 +82,9 @@ class FeatureTests(unittest.TestCase):
 
         self.assertEqual(observations["2025-06-01"]["observed_temp_max_c"], 30.5)
         self.assertEqual(observations["2025-06-01"]["observed_precipitation_mm"], 2.7)
+
+    def test_nasa_power_utc_date_is_converted_to_asia_kolkata_date(self):
+        self.assertEqual(_power_date_to_local_date("20250601"), "2025-06-01")
 
 
 class WeatherServingTests(unittest.TestCase):
