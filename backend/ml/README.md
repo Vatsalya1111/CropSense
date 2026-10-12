@@ -70,3 +70,67 @@ and rainfall amount remain provider values. If the artifact is missing, invalid,
 or inference fails, it returns the original weather unchanged. Fallback sample
 weather is never refined. Successful outputs include `modelVersion`,
 `correctionApplied`, and `correctedFields` metadata.
+
+## Current evaluation and progress tracking
+
+The checked-in snapshot in [`artifacts/evaluation_metrics.json`](./artifacts/evaluation_metrics.json)
+is for `cropsense-weather-v1`, evaluated on 14,292 aligned samples across
+Srirangapatna/Mandya, Mysuru, Bengaluru, and Hassan. It evaluates five-day
+forecast leads against NASA POWER gridded values, which are proxy truth rather
+than measurements from farms. Lower MAE/RMSE is better; higher rain precision,
+recall, and F1 is better. Rain occurrence means at least 2.5 mm in a day.
+
+### Time-ordered holdout (latest 20% of dates)
+
+| Measure | Raw forecast | Corrected forecast | Direction |
+|---|---:|---:|---|
+| Maximum temperature MAE (°C) | 1.7654 | 1.3022 | Improved |
+| Maximum temperature RMSE (°C) | 2.1280 | 1.5862 | Improved |
+| Minimum temperature MAE (°C) | 0.8778 | 0.8943 | Worse |
+| Minimum temperature RMSE (°C) | 1.1531 | 1.1925 | Worse |
+| Rain occurrence precision | 0.5685 | 0.7018 | Improved |
+| Rain occurrence recall | 0.5630 | 0.4932 | Worse |
+| Rain occurrence F1 | 0.5657 | 0.5792 | Improved |
+
+### Leave-one-location-out average
+
+Each fold trains without one Karnataka location and evaluates on that unseen
+location; the values below average the four folds.
+
+| Measure | Raw forecast | Corrected forecast | Direction |
+|---|---:|---:|---|
+| Maximum temperature MAE (°C) | 1.8503 | 1.1353 | Improved |
+| Maximum temperature RMSE (°C) | 2.2174 | 1.4564 | Improved |
+| Minimum temperature MAE (°C) | 0.9827 | 0.9441 | Improved |
+| Minimum temperature RMSE (°C) | 1.2652 | 1.1943 | Improved |
+| Rain occurrence precision | 0.6858 | 0.7702 | Improved |
+| Rain occurrence recall | 0.5566 | 0.4635 | Worse |
+| Rain occurrence F1 | 0.6099 | 0.5651 | Worse |
+
+**Promotion status: not passed.** The current gate requires corrected MAE for
+both temperatures and rain F1 to improve on both the time-ordered holdout and
+the average leave-one-location-out result. Minimum-temperature MAE regressed
+on the time holdout, and average leave-one-location-out rain F1 regressed.
+Consequently, training does not write a serving model artifact; the live API
+continues with the raw forecast unless a later evaluation passes all checks.
+
+Use these paired raw/corrected values as the progress baseline after each
+candidate change. Focus on restoring minimum-temperature holdout performance
+and rain F1 on unseen locations, while keeping the time split and location
+folds unchanged for fair comparison. Review per-location results in the JSON
+too: a good average can hide a location-specific regression. Do not describe
+these scores as farm-level accuracy or real-world lift; local gauge or sensor
+validation is still needed for that claim.
+
+To refresh the report, prepare the same date range and locations, then run
+evaluation before training:
+
+```powershell
+python -m backend.ml.prepare_data
+python -m backend.ml.evaluate --data backend/ml/data/prepared_weather.csv
+```
+
+Evaluation writes the report to `backend/ml/artifacts/evaluation_metrics.json`.
+Training writes its own `metrics.json` beside the requested model output and
+only saves the model if the promotion gate passes. Compare candidate results
+with the checked-in evaluation snapshot before treating a run as progress.

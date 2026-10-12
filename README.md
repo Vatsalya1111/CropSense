@@ -26,6 +26,7 @@ React frontend (Vite + TypeScript)
 FastAPI backend
         |
         +--> weather.py        -> Open-Meteo fetch + normalization + fallback handling
+        +--> ml/serve.py       -> optional model correction for daily forecast values
         +--> predictions.py    -> irrigation logic, crop scoring, alerts, advisories
         +--> data.py           -> farm metadata and fallback soil moisture
 ```
@@ -65,7 +66,8 @@ This project is currently an MVP and uses:
 
 - sample farm profile data
 - estimated soil moisture instead of live sensor input
-- a transparent rule-based prediction model instead of a trained ML model
+- transparent rule-based crop advisories, separate from the optional weather correction model
+- a weather correction model that is served only after passing the documented promotion gate; the current evaluation has not passed, so the API keeps raw forecasts
 
 This keeps the system easy to inspect, test, and evolve.
 
@@ -141,7 +143,8 @@ After both services are running:
 1. Backend requests weather data from Open-Meteo.
 2. Data is normalized into consistent current and forecast fields.
 3. If the source fails or returns incomplete data, it falls back to sample weather values.
-4. Cached results are refreshed every 10 minutes.
+4. If a validated model artifact is available, the backend optionally refines daily maximum/minimum temperatures and rain probability. Missing or failed model inference leaves weather unchanged; fallback weather is not refined.
+5. Cached results are refreshed every 10 minutes.
 
 ### Prediction pipeline
 
@@ -265,7 +268,7 @@ CropSense/
 ## Future scope
 
 - connect to real farm sensor data
-- replace rule-based logic with an ML or AI model
+- improve and validate the optional weather correction model against proxy truth and, when available, local observations
 - add database-backed farm records and user auth
 - support historical analytics and multi-farm management
 - expand irrigation automation and remote monitoring
