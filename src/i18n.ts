@@ -78,7 +78,3 @@ export function useI18n() {
   const t = useCallback((text: string) => settings.language === 'hi' ? (hindi[text] ?? text) : text, [settings.language]);
   return { t, language: settings.language };
 }
-
-export function translate(text: string, language: 'en' | 'hi'): string {
-  return language === 'hi' ? (hindi[text] ?? text) : text;
-}
