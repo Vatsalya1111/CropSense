@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 import json
 from pathlib import Path
 import time
@@ -27,6 +27,7 @@ LOCATIONS = (
     {"id": "bengaluru", "latitude": 12.9716, "longitude": 77.5946},
     {"id": "hassan", "latitude": 13.0033, "longitude": 76.1004},
 )
+ASIA_KOLKATA = timezone(timedelta(hours=5, minutes=30))
 
 
 def _get_json(url: str, params: dict[str, Any]) -> dict:
@@ -77,10 +78,18 @@ def _daily_forecasts(payload: dict) -> dict[tuple[str, int], dict[str, float]]:
             row_values = [series[index] if index < len(series) else None for series in values.values()]
             if any(value is None for value in row_values):
                 continue
-            key = (timestamp[:10], lead)
-            bucket = daily.setdefault(key, {name: [] for name in values})
-            for name, series in values.items():
-                bucket[name].append(float(series[index]))
+            local_timestamp = datetime.fromisoformat(timestamp)
+            temperature_key = (local_timestamp.date().isoformat(), lead)
+            temperature_bucket = daily.setdefault(temperature_key, {"temperature": [], "precipitation": []})
+            temperature_bucket["temperature"].append(float(values["temperature"][index]))
+
+            # Open-Meteo precipitation is the sum for the preceding hour.
+            precipitation_key = ((local_timestamp - timedelta(hours=1)).date().isoformat(), lead)
+            precipitation_bucket = daily.setdefault(
+                precipitation_key,
+                {"temperature": [], "precipitation": []},
+            )
+            precipitation_bucket["precipitation"].append(float(values["precipitation"][index]))
 
     return {
         key: {
@@ -94,6 +103,12 @@ def _daily_forecasts(payload: dict) -> dict[tuple[str, int], dict[str, float]]:
     }
 
 
+def _power_date_to_local_date(day_key: str) -> str:
+    """Convert a NASA POWER UTC daily label to an Asia/Kolkata calendar date."""
+    utc_timestamp = datetime.strptime(day_key, "%Y%m%d").replace(tzinfo=timezone.utc)
+    return utc_timestamp.astimezone(ASIA_KOLKATA).date().isoformat()
+
+
 def _observations(payload: dict) -> dict[str, dict[str, float]]:
     parameters = payload.get("properties", {}).get("parameter", {})
     series = {
@@ -105,7 +120,7 @@ def _observations(payload: dict) -> dict[str, dict[str, float]]:
         values = {name: float(value) for name, data in series.items() if (value := data[day_key]) not in (None, -999)}
         if len(values) != 3:
             continue
-        day = f"{day_key[:4]}-{day_key[4:6]}-{day_key[6:8]}"
+        day = _power_date_to_local_date(day_key)
         observed[day] = {
             "observed_temp_max_c": values["T2M_MAX"],
             "observed_temp_min_c": values["T2M_MIN"],
@@ -117,6 +132,7 @@ def _observations(payload: dict) -> dict[str, dict[str, float]]:
 def prepare_rows(start_date: str, end_date: str) -> list[dict[str, Any]]:
     """Fetch forecasts and proxy observations, then join them by site and date."""
     rows = []
+    forecast_end_date = (date.fromisoformat(end_date) + timedelta(days=1)).isoformat()
     for location in LOCATIONS:
         coordinates = {
             "latitude": location["latitude"],
@@ -128,8 +144,9 @@ def prepare_rows(start_date: str, end_date: str) -> list[dict[str, Any]]:
                 **coordinates,
                 "hourly": ",".join(_forecast_variables()),
                 "start_date": start_date,
-                "end_date": end_date,
+                "end_date": forecast_end_date,
                 "timezone": "Asia/Kolkata",
+                "timeformat": "iso8601",
             },
         )
         observation_payload = _get_json(
@@ -141,6 +158,7 @@ def prepare_rows(start_date: str, end_date: str) -> list[dict[str, Any]]:
                 "latitude": location["latitude"],
                 "start": start_date.replace("-", ""),
                 "end": end_date.replace("-", ""),
+                "time-standard": "UTC",
                 "format": "JSON",
             },
         )
@@ -148,6 +166,8 @@ def prepare_rows(start_date: str, end_date: str) -> list[dict[str, Any]]:
         forecasts = _daily_forecasts(forecast_payload)
         observations = _observations(observation_payload)
         for (day, lead), forecast in forecasts.items():
+            if not start_date <= day <= end_date:
+                continue
             if day not in observations:
                 continue
             rows.append(
