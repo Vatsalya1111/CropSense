@@ -26,7 +26,7 @@ DEFAULT_THRESHOLDS: CropThresholds = {
     "soil_moisture_stress_below": 35,
     "heat_stress_temperature": 32,
     "severe_heat_temperature": 35,
-    "wet_weather_humidity": 85,
+    "wet_weather_humidity": 90,
     "wet_weather_rainfall_mm": 10,
     "irrigation_rainfall_mm": 10,
     "irrigation_rain_probability": 50,

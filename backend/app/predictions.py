@@ -8,6 +8,13 @@ from math import ceil
 from .crop_config import get_crop_thresholds
 
 
+def _review_day(forecast: list[dict], threshold: float, hindi: bool) -> str:
+    for day in forecast[1:]:
+        if day["expectedRainfall"] < threshold:
+            return f"{day['dayName']} सुबह" if hindi else f"{day['dayName']} morning"
+    return "बारिश के बाद" if hindi else "After the rain"
+
+
 def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, language: str = "en") -> dict:
     """Return derived irrigation and crop-health outputs from normalized inputs.
 
@@ -16,12 +23,17 @@ def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, l
     """
     current = weather["current"]
     forecast = weather["forecast"]
+    thresholds = get_crop_thresholds(farm.get("crop", ""), farm.get("cropStage", ""))
     next_two_days = forecast[:2]
     expected_rain = sum(day["expectedRainfall"] for day in next_two_days)
     rain_probability = max((day["rainProbability"] for day in next_two_days), default=0)
+    consecutive_rain = any(
+        forecast[index]["expectedRainfall"] >= thresholds["wet_weather_rainfall_mm"]
+        and forecast[index + 1]["expectedRainfall"] >= thresholds["wet_weather_rainfall_mm"]
+        for index in range(max(0, len(forecast) - 1))
+    )
     temperature = current["temperature"]
     humidity = current["humidity"]
-    thresholds = get_crop_thresholds(farm.get("crop", ""), farm.get("cropStage", ""))
     weather_fallback = weather["isFallback"]
     inputs_fallback = weather_fallback or soil_source != "sensor"
     now = datetime.now(timezone.utc).isoformat()
@@ -30,7 +42,7 @@ def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, l
     if expected_rain >= thresholds["irrigation_rainfall_mm"] and rain_probability >= thresholds["irrigation_rain_probability"]:
         status = "Do not irrigate"
         action = "सिंचाई रोकें और खेत की जल निकासी जाँचें।" if hindi else "Pause irrigation and check that field drainage is clear."
-        timing = "अनुमानित बारिश के बाद फिर जाँचें" if hindi else "Review after the expected rainfall"
+        timing = _review_day(forecast, thresholds["wet_weather_rainfall_mm"], hindi)
         reason = f"अगले दो दिनों में {expected_rain:.1f} मिमी बारिश का अनुमान है।" if hindi else f"The forecast shows {expected_rain:.1f} mm of rain over the next two days."
     elif soil_moisture < thresholds["soil_moisture_irrigate_below"]:
         status = "Irrigate immediately"
@@ -48,10 +60,14 @@ def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, l
         score -= min(25, ceil((temperature - 30) * 2))
     if soil_moisture < thresholds["soil_moisture_stress_below"]:
         score -= min(30, ceil((thresholds["soil_moisture_stress_below"] - soil_moisture) * 1.5))
-    if humidity > thresholds["wet_weather_humidity"] and expected_rain >= thresholds["wet_weather_rainfall_mm"]:
-        score -= 10
+    disease_risk = humidity >= thresholds["wet_weather_humidity"] or consecutive_rain
+    if disease_risk:
+        score -= 15
     score = max(0, min(100, score))
-    if score >= 85:
+    if disease_risk:
+        overall = "Watch"
+        trend = "declining"
+    elif score >= 85:
         overall = "Optimal"
         trend = "stable"
     elif score >= 70:
@@ -69,7 +85,7 @@ def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, l
         temperature >= thresholds["heat_stress_temperature"] and soil_moisture < 30
     ):
         risks.append("heat and moisture stress")
-    if humidity >= thresholds["wet_weather_humidity"] and expected_rain >= thresholds["wet_weather_rainfall_mm"]:
+    if disease_risk:
         risks.append("wet-weather crop disease conditions")
     if hindi:
         observation = (
@@ -79,7 +95,7 @@ def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, l
             if "wet-weather crop disease conditions" in risks
             else "मौसम और अनुमानित मिट्टी की नमी से फसल पर अभी अधिक तनाव नहीं दिखता।"
         )
-        health_status = {"Optimal": "फसल की स्थिति बहुत अच्छी है", "Good": "फसल की स्थिति अच्छी है", "Moderate Stress": "फसल पर मध्यम तनाव है", "Severe Stress": "फसल पर गंभीर तनाव है"}[overall]
+        health_status = {"Optimal": "फसल की स्थिति बहुत अच्छी है", "Good": "फसल की स्थिति अच्छी है", "Watch": "फसल पर ध्यान दें", "Moderate Stress": "फसल पर मध्यम तनाव है", "Severe Stress": "फसल पर गंभीर तनाव है"}[overall]
         health_action = action if status == "Irrigate immediately" else (
             "खेत की जल निकासी जाँचें और बारिश के बाद निचली पत्तियों का निरीक्षण करें।"
             if "wet-weather crop disease conditions" in risks
@@ -91,7 +107,7 @@ def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, l
             if risks
             else "Current weather and estimated soil moisture do not indicate an elevated crop stress risk."
         )
-        health_status = f"{overall} crop condition"
+        health_status = "Watch crop condition" if overall == "Watch" else f"{overall} crop condition"
         health_action = action if status == "Irrigate immediately" else (
             "Check field drainage and scout lower leaves after wet weather."
             if "wet-weather crop disease conditions" in risks
@@ -188,22 +204,34 @@ def build_advisories(weather: dict, predictions: dict, language: str = "en") -> 
         "title": "सिंचाई की सलाह" if hindi else "Irrigation guidance",
         "category": "irrigation",
         "whatIsHappening": irrigation["reason"],
-        "why": "सिंचाई का निर्णय मिट्टी की नमी और संभावित बारिश पर निर्भर करता है।" if hindi else "Watering decisions depend on soil moisture and expected rainfall.",
-        "whatFarmerShouldDo": irrigation["recommendedAction"],
+        "why": f"{predictions['cropHealth']['cropStage']} अवस्था में बारिश के बीच अतिरिक्त पानी से खेत में जलभराव हो सकता है।" if hindi else f"During the {predictions['cropHealth']['cropStage'].lower()} stage, extra water between rainy days can leave the field waterlogged.",
+        "whatFarmerShouldDo": "सिंचाई न करें।" if hindi and irrigation["irrigationStatus"] == "Do not irrigate" else "Do not irrigate." if irrigation["irrigationStatus"] == "Do not irrigate" else irrigation["recommendedAction"],
         "whenToDoIt": irrigation["recommendedTime"],
         "priority": "urgent" if irrigation["irrigationStatus"] == "Irrigate immediately" else "normal",
         "date": "आज" if hindi else "Today",
     }]
-    if crop["healthScore"] < 85:
+    if crop["overallHealth"] == "Watch":
+        follow_up = "बारिश के बाद खेत की जल निकासी जाँचें।" if hindi else "Check field drainage after the rain."
         advisories.append({
-            "id": "crop-risk-guidance",
-            "title": "फसल की स्थिति जाँचें" if hindi else "Crop condition check",
+            "id": "drainage-guidance",
+            "title": "जल निकासी जाँचें" if hindi else "Check field drainage",
             "category": "crop_protection",
             "whatIsHappening": crop["observation"],
-            "why": "मौसम और नमी की स्थिति से फसल पर तनाव बढ़ सकता है।" if hindi else "Weather and moisture conditions can increase crop stress.",
-            "whatFarmerShouldDo": crop["recommendedAction"],
-            "whenToDoIt": "आज" if hindi else "Today",
-            "priority": "warning" if crop["healthScore"] < 70 else "normal",
+            "why": f"{crop['cropStage']} अवस्था में जलभराव जड़ों तक हवा कम पहुँचाता है।" if hindi else f"During the {crop['cropStage'].lower()} stage, waterlogging reduces air around the roots.",
+            "whatFarmerShouldDo": follow_up,
+            "whenToDoIt": "आज" if hindi else "This afternoon",
+            "priority": "warning",
+            "date": "आज" if hindi else "Today",
+        })
+        advisories.append({
+            "id": "leaf-scouting-guidance",
+            "title": "निचली पत्तियाँ देखें" if hindi else "Scout lower leaves",
+            "category": "crop_protection",
+            "whatIsHappening": crop["observation"],
+            "why": f"{crop['cropStage']} अवस्था में लगातार नमी पत्तियों पर रोग के शुरुआती संकेत बढ़ा सकती है।" if hindi else f"During the {crop['cropStage'].lower()} stage, persistent moisture can increase early disease signs on leaves.",
+            "whatFarmerShouldDo": "बारिश के बाद निचली पत्तियों का निरीक्षण करें।" if hindi else "Scout lower leaves after the rain.",
+            "whenToDoIt": "बारिश रुकने के बाद" if hindi else "After the rain stops",
+            "priority": "warning",
             "date": "आज" if hindi else "Today",
         })
     return advisories

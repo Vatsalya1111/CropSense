@@ -29,6 +29,12 @@ export interface Farm {
   boundary?: [number, number][];
 }
 
+export interface FarmProfile {
+  configured: boolean;
+  farmer: Farmer | null;
+  farm: Farm | null;
+}
+
 export interface WeatherDayForecast {
   date: string;
   dayName: string;
@@ -61,7 +67,7 @@ export interface WeatherData {
 }
 
 export interface CropHealth {
-  overallHealth: 'Optimal' | 'Good' | 'Moderate Stress' | 'Severe Stress';
+  overallHealth: 'Optimal' | 'Good' | 'Watch' | 'Moderate Stress' | 'Severe Stress';
   healthStatus: string;
   healthScore: number; // 0 - 100
   healthTrend: 'improving' | 'stable' | 'declining';
