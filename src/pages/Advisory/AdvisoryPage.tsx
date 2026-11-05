@@ -58,7 +58,7 @@ export const AdvisoryPage: React.FC = () => {
                   <div className="flex items-center gap-2 text-xs text-stone-500 mt-0.5">
                     <span>{item.date}</span>
                     <span>•</span>
-                    <span className="capitalize">{item.category.replace('_', ' ')}</span>
+                    <span>{t(item.category === 'crop_protection' ? 'Crop protection' : item.category)}</span>
                   </div>
                 </div>
               </div>
@@ -69,7 +69,7 @@ export const AdvisoryPage: React.FC = () => {
                     : 'bg-stone-100 text-stone-700'
                 }`}
               >
-                {item.priority === 'urgent' ? 'Important' : 'Routine'}
+                {t(item.priority === 'urgent' ? 'Important' : 'Routine')}
               </span>
             </div>
 
