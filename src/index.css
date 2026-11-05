@@ -12,7 +12,7 @@
   --agri-green: #26734d;
   --agri-green-dark: #185b3a;
   --agri-ink: #1c2921;
-  --agri-muted: #68746c;
+  --agri-muted: #536158;
   --agri-border: #e3e9e2;
   --page-bg: #f5f7f2;
   --surface: #ffffff;
@@ -41,8 +41,22 @@ body {
   min-height: 100vh;
   background: var(--page-bg);
   color: var(--agri-ink);
+  font-size: 16px;
   font-family: "Open Sans", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
   transition: background-color 260ms ease, color 260ms ease;
+}
+
+.text-xs,
+.text-\[11px\] {
+  font-size: 0.8125rem;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  min-height: 44px;
 }
 
 h1,
