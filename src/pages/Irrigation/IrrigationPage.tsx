@@ -4,6 +4,7 @@ import { DataSourceNotice } from '../../components/common/DataSourceNotice';
 import { useI18n } from '../../i18n';
 import { irrigationService } from '../../services';
 import { IrrigationRecommendation } from '../../types';
+import { SoilMoistureBar } from '../../components/common/SoilMoistureBar';
 
 export const IrrigationPage: React.FC = () => {
   const { t } = useI18n();
@@ -20,7 +21,7 @@ export const IrrigationPage: React.FC = () => {
     <div className="space-y-7 max-w-5xl mx-auto">
       <div className="page-heading">
         <div className="flex items-center gap-2 text-xs font-semibold text-sky-800 uppercase tracking-wider mb-0.5"><Droplets size={14} /><span>{t('Irrigation Decision')}</span></div>
-        <h2 className="text-2xl sm:text-3xl font-black text-stone-900">{t('Should I Water My Crop?')}</h2>
+        <h2 className="text-2xl sm:text-3xl font-black text-stone-900">{t('Should I water my crop?')}</h2>
         <p className="text-sm text-stone-600 mt-1">{t('Recommendation derived from soil moisture and expected rainfall.')}</p>
       </div>
       <DataSourceNotice source={data.dataSource} isFallback={data.isFallback} />
@@ -33,7 +34,7 @@ export const IrrigationPage: React.FC = () => {
           <div className="p-4 bg-white/95 rounded-xl border border-stone-200"><div className="flex items-center gap-1.5 text-xs font-bold text-stone-600 uppercase mb-1"><HelpCircle size={14} />{t('Why?')}</div><p className="text-stone-900 text-sm font-semibold">{t(data.reason)}</p></div>
           <div className="p-4 bg-white/95 rounded-xl border border-stone-200"><div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 uppercase mb-1"><CheckCircle2 size={14} />{t('Action')}</div><p className="text-stone-950 text-sm font-black">{t(data.recommendedAction)}</p></div>
         </div>
-        <div className="pt-4"><div className="flex justify-between items-baseline mb-2"><span className="text-xs font-bold text-stone-600 uppercase">{t('Soil Moisture Estimate')}</span><span className="text-2xl font-black text-stone-900">{data.soilMoisture}%</span></div><div className="w-full h-3.5 bg-stone-200 rounded-full overflow-hidden"><div className={`h-full ${waterNeeded ? 'bg-amber-500' : 'bg-emerald-600'}`} style={{ width: `${Math.min(100, data.soilMoisture * 1.5)}%` }} /></div><div className="flex justify-between text-[11px] font-bold text-stone-500 mt-2"><span>{t('Dry (<25%)')}</span><span>{t('Good (25–50%)')}</span><span>{t('Wet (>50%)')}</span></div></div>
+        <div className="pt-4"><div className="flex justify-between items-baseline mb-2"><span className="text-xs font-bold text-stone-600 uppercase">{t('Soil Moisture Estimate')}</span><span className="text-2xl font-black text-stone-900">{data.soilMoisture}%</span></div><SoilMoistureBar value={data.soilMoisture} /></div>
       </div>
     </div>
   );
