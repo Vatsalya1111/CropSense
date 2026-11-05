@@ -31,7 +31,7 @@ export const AdvisoryPage: React.FC = () => {
           <span>{t('Field Guidance')}</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
-          {t('What Should I Do on the Farm Today?')}
+          {t('What should I do on the farm today?')}
         </h2>
         <p className="text-sm text-stone-600 mt-1">
           {t('Simple daily checklist with timing and clear reasons for your crop.')}
@@ -39,20 +39,9 @@ export const AdvisoryPage: React.FC = () => {
       </div>
 
       {/* Visual Advisory Header Banner */}
-      <div className="relative rounded-3xl overflow-hidden border border-stone-200/90 shadow-sm bg-emerald-950">
-        <img
-          src="/images/farmer-inspection.svg"
-          alt="Field advisory inspection checklist"
-          className="w-full h-36 sm:h-44 object-cover opacity-90"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/30 to-transparent flex flex-col justify-end p-5 text-white">
-          <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider">
-            {t('Daily Agronomy Advice')}
-          </span>
-          <h3 className="text-lg sm:text-xl font-bold text-white mt-0.5">
-            {advisories.length} {t('Action Tasks for Your Crop Today')}
-          </h3>
-        </div>
+      <div className="rounded-3xl border border-emerald-900 bg-emerald-950 p-5 text-white shadow-sm">
+        <span className="text-xs font-bold uppercase tracking-wider text-emerald-200">{t('Daily Agronomy Advice')}</span>
+        <h3 className="mt-1 text-lg font-bold">{advisories.length} {t(advisories.length === 1 ? 'task' : 'tasks')} {t('for your crop today')}</h3>
       </div>
 
       {/* Actionable Advisories List */}
