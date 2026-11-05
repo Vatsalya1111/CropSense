@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import asyncio
 from datetime import datetime, timedelta, timezone
+from typing import Literal
+from pydantic import BaseModel, Field
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from .data import FARM, FARMER, FALLBACK_SOIL_MOISTURE
+from .data import FALLBACK_SOIL_MOISTURE
+from .database import get_profile, save_profile
 from .predictions import build_advisories, build_alerts, predict
 from .weather import get_weather
 
@@ -23,33 +26,80 @@ app = FastAPI(title="CropSense API", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-    allow_methods=["GET"],
+    allow_methods=["GET", "PUT"],
     allow_headers=["*"],
 )
 
 _weather_cache: dict | None = None
 _weather_cache_until: datetime | None = None
+_weather_cache_key: tuple[float, float, float] | None = None
 _weather_lock = asyncio.Lock()
 
 
-async def current_weather() -> dict:
-    global _weather_cache, _weather_cache_until
+class FarmerInput(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    phone: str = Field(pattern=r"^\+91 ?[6-9]\d{4} ?\d{5}$")
+    village: str = Field(min_length=1, max_length=100)
+    district: str = Field(min_length=1, max_length=100)
+    state: str = Field(min_length=1, max_length=100)
+    preferredLanguage: Literal["en", "hi"] = "en"
+
+
+class FarmLocationInput(BaseModel):
+    lat: float = Field(ge=-90, le=90)
+    lng: float = Field(ge=-180, le=180)
+    elevationM: float = Field(default=0, ge=-500, le=9000)
+    village: str = Field(min_length=1, max_length=100)
+    district: str = Field(min_length=1, max_length=100)
+    state: str = Field(min_length=1, max_length=100)
+
+
+class FarmInput(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    location: FarmLocationInput
+    area: float = Field(gt=0, le=100000)
+    areaUnit: Literal["acres", "hectares"]
+    crop: str = Field(min_length=1, max_length=100)
+    cropStage: str = Field(min_length=1, max_length=100)
+    soilType: str = Field(min_length=1, max_length=100)
+    irrigationType: str = Field(min_length=1, max_length=100)
+
+
+class ProfileInput(BaseModel):
+    farmer: FarmerInput
+    farm: FarmInput
+
+
+def required_profile() -> dict:
+    profile = get_profile()
+    if profile is None:
+        raise HTTPException(status_code=409, detail="Add your farmer and farm details first.")
+    return profile
+
+
+async def current_weather(farm: dict) -> dict:
+    global _weather_cache, _weather_cache_until, _weather_cache_key
+    location = farm["location"]
+    key = (location["lat"], location["lng"], location.get("elevationM", 0))
     now = datetime.now(timezone.utc)
-    if _weather_cache is not None and _weather_cache_until and now < _weather_cache_until:
+    if _weather_cache is not None and _weather_cache_key == key and _weather_cache_until and now < _weather_cache_until:
         return _weather_cache
     async with _weather_lock:
         now = datetime.now(timezone.utc)
-        if _weather_cache is None or _weather_cache_until is None or now >= _weather_cache_until:
-            raw_weather = await asyncio.to_thread(get_weather)
-            _weather_cache = refine_weather(raw_weather, FARM)
+        if _weather_cache is None or _weather_cache_key != key or _weather_cache_until is None or now >= _weather_cache_until:
+            raw_weather = await asyncio.to_thread(get_weather, farm)
+            _weather_cache = refine_weather(raw_weather, farm)
+            _weather_cache_key = key
             _weather_cache_until = now + timedelta(minutes=10)
     return _weather_cache
 
 
 async def current_report(language: str = "en") -> dict:
-    weather = await current_weather()
+    profile = required_profile()
+    farm = profile["farm"]
+    weather = await current_weather(farm)
     # Sensor integration is not available; this is a labeled sample estimate.
-    prediction = predict(weather, FALLBACK_SOIL_MOISTURE, "estimated fallback", FARM, language)
+    prediction = predict(weather, FALLBACK_SOIL_MOISTURE, "estimated fallback", farm, language)
     return {
         "weather": weather,
         **prediction,
@@ -89,17 +139,35 @@ def health() -> dict:
 
 @app.get("/api/farmer")
 def farmer() -> dict:
-    return FARMER
+    return required_profile()["farmer"]
 
 
 @app.get("/api/farm")
 def farm() -> dict:
-    return FARM
+    return required_profile()["farm"]
+
+
+@app.get("/api/profile")
+def profile() -> dict:
+    saved_profile = get_profile()
+    if saved_profile is None:
+        return {"configured": False, "farmer": None, "farm": None}
+    return {"configured": True, **saved_profile}
+
+
+@app.put("/api/profile")
+def update_profile(payload: ProfileInput) -> dict:
+    saved_profile = save_profile(
+        payload.farmer.model_dump(),
+        payload.farm.model_dump(by_alias=True),
+    )
+    return {"configured": True, **saved_profile}
 
 
 @app.get("/api/weather")
 async def weather(language: str = "en") -> dict:
-    return localized_weather(await current_weather(), language)
+    farm_data = required_profile()["farm"]
+    return localized_weather(await current_weather(farm_data), language)
 
 
 @app.get("/api/irrigation")
@@ -120,5 +188,3 @@ async def alerts(language: str = "en") -> list[dict]:
 @app.get("/api/advisories")
 async def advisories(language: str = "en") -> list[dict]:
     return (await current_report(language))["advisories"]
-
-

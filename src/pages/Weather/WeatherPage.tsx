@@ -31,7 +31,7 @@ export const WeatherPage: React.FC = () => {
     <div className="space-y-7 max-w-5xl mx-auto">
       <div className="page-heading">
         <div className="flex items-center gap-2 text-xs font-semibold text-sky-800 uppercase tracking-wider mb-0.5"><CloudSun size={14} /><span>{t('Weather & Forecast')}</span></div>
-        <h2 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">{t('What Is the Weather Going to Do?')}</h2>
+        <h2 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">{t('What is the weather going to do?')}</h2>
         <p className="text-sm text-stone-600 mt-1">{t('Current conditions and a five-day outlook for your farm.')}</p>
       </div>
       <DataSourceNotice source={data.dataSource} isFallback={data.isFallback} />
@@ -47,12 +47,12 @@ export const WeatherPage: React.FC = () => {
           </div>
         </div>
         <div className="py-4 border-b border-stone-200/60 text-sm font-medium text-stone-800">
-          {forecast[1] ? `${t(forecast[1].weatherCondition)} ${t('is forecast tomorrow with')} ${forecast[1].expectedRainfall} ${t('mm expected rainfall.')}` : t('Check the forecast before planning field work.')}
+          {forecast[1] ? `${t(forecast[1].weatherCondition)} ${t(forecast[1].weatherCondition === 'Rain showers' ? 'are forecast tomorrow with' : 'is forecast tomorrow with')} ${forecast[1].expectedRainfall} ${t('mm expected rainfall.')}` : t('Check the forecast before planning field work.')}
         </div>
         <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
           {[
             ['Humidity', `${current.humidity}%`, <Droplet size={14} />],
-            ['Rain today', `${current.rainfall} mm`, <CloudRain size={14} />],
+            ['Rained so far', `${current.rainfall} mm`, <CloudRain size={14} />],
             ['Wind speed', `${current.windSpeed} km/h`, <Wind size={14} />],
             ['Feels like', `${current.feelsLike}°C`, <Thermometer size={14} />],
           ].map(([label, value, icon]) => <div key={String(label)} className="p-3 bg-white/90 rounded-xl border border-stone-200/80"><div className="flex items-center justify-center gap-1.5 text-stone-500 text-xs">{icon}{t(String(label))}</div><div className="text-lg font-black text-stone-900">{value}</div></div>)}
