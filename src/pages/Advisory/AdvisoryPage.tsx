@@ -100,7 +100,7 @@ export const AdvisoryPage: React.FC = () => {
                 <div className="p-3.5 bg-stone-50/70 rounded-xl border border-stone-100">
                   <div className="flex items-center gap-1 text-[11px] font-bold text-stone-500 uppercase tracking-wider mb-1">
                     <AlertCircle size={12} className="text-stone-400" />
-                    <span>{t('What Is Happening')}</span>
+                    <span>{t('What is happening')}</span>
                   </div>
                   <p className="text-stone-700 leading-relaxed font-medium">{item.whatIsHappening}</p>
                 </div>
@@ -108,7 +108,7 @@ export const AdvisoryPage: React.FC = () => {
                 <div className="p-3.5 bg-stone-50/70 rounded-xl border border-stone-100">
                   <div className="flex items-center gap-1 text-[11px] font-bold text-stone-500 uppercase tracking-wider mb-1">
                     <HelpCircle size={12} className="text-stone-400" />
-                    <span>{t('Why This Matters')}</span>
+                    <span>{t('Why this matters')}</span>
                   </div>
                   <p className="text-stone-700 leading-relaxed font-medium">{item.why}</p>
                 </div>

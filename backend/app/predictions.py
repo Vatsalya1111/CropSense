@@ -28,8 +28,14 @@ def predict(weather: dict, soil_moisture: float, soil_source: str, farm: dict, l
     expected_rain = sum(day["expectedRainfall"] for day in next_two_days)
     rain_probability = max((day["rainProbability"] for day in next_two_days), default=0)
     consecutive_rain = any(
-        forecast[index]["expectedRainfall"] >= thresholds["wet_weather_rainfall_mm"]
-        and forecast[index + 1]["expectedRainfall"] >= thresholds["wet_weather_rainfall_mm"]
+        (
+            forecast[index]["expectedRainfall"] >= thresholds["wet_weather_rainfall_mm"]
+            or forecast[index]["rainProbability"] >= thresholds["irrigation_rain_probability"]
+        )
+        and (
+            forecast[index + 1]["expectedRainfall"] >= thresholds["wet_weather_rainfall_mm"]
+            or forecast[index + 1]["rainProbability"] >= thresholds["irrigation_rain_probability"]
+        )
         for index in range(max(0, len(forecast) - 1))
     )
     temperature = current["temperature"]

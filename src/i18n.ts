@@ -73,7 +73,7 @@ const hindi: Record<string, string> = {
   'Field Guidance': 'खेत के लिए सलाह', 'What Should I Do on the Farm Today?': 'आज खेत में मुझे क्या करना चाहिए?',
   'Simple daily checklist with timing and clear reasons for your crop.': 'फसल के लिए आज के काम, सही समय और उनके कारण।',
   'Daily Agronomy Advice': 'आज की खेती सलाह', 'Action Tasks for Your Crop Today': 'आज फसल के लिए काम',
-  'Action: What to Do': 'क्या करें', 'When:': 'कब:', 'What Is Happening': 'क्या हो रहा है', 'Why This Matters': 'यह क्यों ज़रूरी है',
+  'Action: What to Do': 'क्या करें', 'When:': 'कब:', 'What is happening': 'क्या हो रहा है', 'Why this matters': 'यह क्यों ज़रूरी है',
   'Priority Warnings': 'ज़रूरी चेतावनियाँ', 'Is There Any Danger to My Crop?': 'क्या मेरी फसल को कोई खतरा है?',
   'High-priority weather and field warnings that require your attention today.': 'मौसम और खेत के वे जोखिम जिन पर आज ध्यान देना ज़रूरी है।',
   'All Clear in Your Field': 'खेत में अभी कोई चेतावनी नहीं',
