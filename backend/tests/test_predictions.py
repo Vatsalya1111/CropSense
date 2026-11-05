@@ -1,9 +1,14 @@
 import unittest
 from unittest.mock import patch
 
-from backend.app.data import FARM
 from backend.app.predictions import predict
 from backend.app.weather import fallback_weather, get_weather, normalize_weather
+
+FARM = {
+    "crop": "Ragi",
+    "cropStage": "Vegetative",
+    "location": {"lat": 12.4, "lng": 76.7, "elevationM": 679},
+}
 
 
 def weather_fixture(temperature, humidity, rain_probability, rainfall):
@@ -49,12 +54,12 @@ class WeatherTests(unittest.TestCase):
 
     def test_provider_failure_uses_fallback_weather(self):
         with patch("backend.app.weather._request_weather", side_effect=OSError("offline")):
-            result = get_weather()
+            result = get_weather(FARM)
         self.assertTrue(result["isFallback"])
 
     def test_malformed_provider_payload_uses_fallback_weather(self):
         with patch("backend.app.weather._request_weather", return_value={"unexpected": True}):
-            result = get_weather()
+            result = get_weather(FARM)
         self.assertTrue(result["isFallback"])
 
 

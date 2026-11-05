@@ -38,13 +38,18 @@ export const Sidebar: React.FC = () => {
   const [farm, setFarm] = useState<Farm | null>(null);
 
   useEffect(() => {
-    Promise.all([farmService.getFarmer(), farmService.getFarm()]).then(([currentFarmer, currentFarm]) => {
-      setFarmer(currentFarmer);
-      setFarm(currentFarm);
-    }).catch(() => {
-      setFarmer(null);
-      setFarm(null);
-    });
+    const loadProfile = () => {
+      Promise.all([farmService.getFarmer(), farmService.getFarm()]).then(([currentFarmer, currentFarm]) => {
+        setFarmer(currentFarmer);
+        setFarm(currentFarm);
+      }).catch(() => {
+        setFarmer(null);
+        setFarm(null);
+      });
+    };
+    loadProfile();
+    window.addEventListener('cropsense:profile-updated', loadProfile);
+    return () => window.removeEventListener('cropsense:profile-updated', loadProfile);
   }, []);
   return (
     <aside className="hidden md:flex flex-col w-64 fixed left-0 top-0 bottom-0 bg-[#fbfcf9] text-stone-700 border-r border-[#e5ebe3] z-30">

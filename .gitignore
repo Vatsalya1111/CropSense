@@ -16,6 +16,7 @@ dist-ssr
 *.local
 backend/ml/data/
 backend/ml/artifacts/*.joblib
+backend/*.sqlite3
 
 # Editor directories and files
 .vscode/*

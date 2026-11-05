@@ -18,3 +18,18 @@ export async function apiGet<T>(resource: string): Promise<T> {
   }
   return response.json() as Promise<T>;
 }
+
+export async function apiPut<T>(resource: string, body: unknown): Promise<T> {
+  const query = new URLSearchParams({ language: currentLanguage() });
+  const response = await fetch(`${API_BASE_URL}/${resource.replace(/^\//, '')}?${query}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null);
+    const detail = payload?.detail;
+    throw new Error(typeof detail === 'string' ? detail : `CropSense API request failed (${response.status}) for ${resource}`);
+  }
+  return response.json() as Promise<T>;
+}

@@ -8,8 +8,13 @@ from backend.ml.evaluate import promotion_gate
 from backend.ml.features import build_features
 from backend.ml.prepare_data import _daily_forecasts, _observations, _power_date_to_local_date
 from backend.ml.serve import MODEL_VERSION, refine_weather
-from backend.app.data import FARM
 from backend.app.weather import fallback_weather
+
+FARM = {
+    "crop": "Ragi",
+    "cropStage": "Vegetative",
+    "location": {"lat": 12.4, "lng": 76.7, "elevationM": 679},
+}
 
 
 class FeatureTests(unittest.TestCase):

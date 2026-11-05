@@ -8,15 +8,13 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from .data import FARM
-
 OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 
 
-def _request_weather() -> dict:
+def _request_weather(farm: dict) -> dict:
     params = {
-        "latitude": FARM["location"]["lat"],
-        "longitude": FARM["location"]["lng"],
+        "latitude": farm["location"]["lat"],
+        "longitude": farm["location"]["lng"],
         "current": ",".join(
             [
                 "temperature_2m",
@@ -163,9 +161,9 @@ def fallback_weather() -> dict:
     }
 
 
-def get_weather() -> dict:
+def get_weather(farm: dict) -> dict:
     try:
-        result = normalize_weather(_request_weather())
+        result = normalize_weather(_request_weather(farm))
         # Fail over when a provider response is incomplete or unusable.
         if not result["forecast"] or result["current"]["temperature"] is None:
             raise ValueError("Open-Meteo returned incomplete weather data")

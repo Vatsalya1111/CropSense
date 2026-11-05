@@ -4,7 +4,7 @@ Helping farmers and maintaining sustainable development
 
 CropSense is a lightweight agricultural monitoring dashboard that combines weather data, farm profile information, and crop decision logic into a simple farmer-friendly advisory system.
 
-It is built with a React frontend and a FastAPI backend, and is designed to provide irrigation guidance, crop health insights, localized alerts, and weather-based recommendations for a sample farm.
+It is built with a React frontend and a FastAPI backend, and provides irrigation guidance, crop health insights, localized alerts, and weather-based recommendations for a farmer's saved farm profile.
 
 ## Overview
 
@@ -30,7 +30,8 @@ FastAPI backend
         +--> weather.py        -> Open-Meteo fetch + normalization + fallback handling
         +--> ml/serve.py       -> optional model correction for daily forecast values
         +--> predictions.py    -> irrigation logic, crop scoring, alerts, advisories
-        +--> data.py           -> farm metadata and fallback soil moisture
+        +--> database.py       -> SQLite farmer and farm profile
+        +--> data.py           -> estimated soil moisture fallback
 ```
 
 ### Frontend
@@ -46,10 +47,12 @@ Key frontend folders:
 
 Key backend modules:
 
+- `backend/app/database.py` – SQLite persistence for farmer and farm profiles
 - `backend/app/main.py` – FastAPI entry point and route definitions
 - `backend/app/weather.py` – weather provider integration and fallback logic
 - `backend/app/predictions.py` – irrigation and crop prediction rules
-- `backend/app/data.py` – sample farmer and farm profile data
+- `backend/app/database.py` – SQLite persistence for the farmer and farm profile
+- `backend/app/data.py` – estimated soil moisture fallback
 
 ## Features
 
@@ -60,18 +63,21 @@ Key backend modules:
 - Advisory cards with action suggestions
 - English/Hindi language support
 - Local theme and language preferences via browser storage
-- Fallback sample data when external weather services fail
+- First-run farmer and farm profile setup, with profile editing
+- Fallback sample weather when external weather services fail
 
 ## Project status
 
 This project is currently an MVP and uses:
 
-- sample farm profile data
+- one farmer and farm profile stored in SQLite (`backend/cropsense.sqlite3` by default)
 - estimated soil moisture instead of live sensor input
 - transparent rule-based crop advisories, separate from the optional weather correction model
 - a weather correction model that is served only after passing the documented promotion gate; the current evaluation has not passed, so the API keeps raw forecasts
 
 This keeps the system easy to inspect, test, and evolve.
+
+The first-run form asks for the farmer's name and contact details, farm location (latitude and longitude), area, crop and growth stage, soil type, and irrigation method. No demo profile is inserted. To store the database elsewhere, set `CROPSENSE_DB_PATH` before starting the backend. The current app stores one profile per installation; shared multi-user access needs authentication and is not enabled.
 
 ## Setup
 
@@ -133,16 +139,17 @@ $env:VITE_API_BASE_URL = "http://127.0.0.1:8000"
 After both services are running:
 
 1. Open the frontend in the browser.
-2. Navigate through the Dashboard, Weather, Farm, Crop Health, Irrigation, Alerts, and Advisory pages.
-3. Review live or fallback weather data.
-4. Use recommendations to decide irrigation timing and crop action.
-5. Switch language or theme from the settings area.
+2. Enter farmer and farm details when the setup form appears.
+3. Navigate through the Dashboard, Weather, Farm, Crop Health, Irrigation, Alerts, and Advisory pages.
+4. Review live or fallback weather data.
+5. Use recommendations to decide irrigation timing and crop action.
+6. Switch language or theme from the settings area.
 
 ## Pipelines
 
 ### Weather pipeline
 
-1. Backend requests weather data from Open-Meteo.
+1. Backend reads the saved farm coordinates and requests weather data from Open-Meteo.
 2. Data is normalized into consistent current and forecast fields.
 3. If the source fails or returns incomplete data, it falls back to sample weather values.
 4. If a validated model artifact is available, the backend optionally refines daily maximum/minimum temperatures and rain probability. Missing or failed model inference leaves weather unchanged; fallback weather is not refined.
@@ -162,6 +169,8 @@ All routes are under `/api` and accept an optional `language` query parameter, f
 | Method | Endpoint | Description |
 |---|---|---|
 | GET | `/api/health` | Health check for the backend service |
+| GET | `/api/profile` | Profile setup status and saved farmer/farm details |
+| PUT | `/api/profile` | Create or update the farmer and farm profile |
 | GET | `/api/farmer` | Farmer profile information |
 | GET | `/api/farm` | Farm details and geographic metadata |
 | GET | `/api/weather` | Current weather and 5-day forecast |
@@ -271,7 +280,7 @@ CropSense/
 
 - connect to real farm sensor data
 - improve and validate the optional weather correction model against proxy truth and, when available, local observations
-- add database-backed farm records and user auth
+- add authentication for shared multi-user deployments
 - support historical analytics and multi-farm management
 - expand irrigation automation and remote monitoring
 

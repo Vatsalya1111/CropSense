@@ -23,7 +23,10 @@ export const Header: React.FC = () => {
   const currentTitle = t(PAGE_TITLES[location.pathname] || 'CropSense');
 
   useEffect(() => {
-    farmService.getFarm().then(setFarm).catch(() => setFarm(null));
+    const loadFarm = () => farmService.getFarm().then(setFarm).catch(() => setFarm(null));
+    loadFarm();
+    window.addEventListener('cropsense:profile-updated', loadFarm);
+    return () => window.removeEventListener('cropsense:profile-updated', loadFarm);
   }, []);
 
   return (
