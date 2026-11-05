@@ -287,4 +287,3 @@ CropSense/
 ## Summary
 
 CropSense is a practical crop advisory and monitoring dashboard designed for clear, actionable agricultural guidance. It combines weather intelligence, crop logic, and a simple interface to support farm decision-making in an easy-to-extend MVP format.
->>>>>>> origin/backend_development

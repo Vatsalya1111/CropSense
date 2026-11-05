@@ -59,7 +59,7 @@ const hindi: Record<string, string> = {
   'OpenStreetMap GPS view of your wheat plot': 'आपके खेत का GPS नक्शा', 'Farmland landscape': 'खेत का दृश्य',
   'Weather & Forecast': 'मौसम और पूर्वानुमान', 'What is the weather going to do?': 'मौसम कैसा रहेगा?',
   'Current conditions and a five-day outlook for your farm.': 'खेत का आज का मौसम और अगले पाँच दिनों का पूर्वानुमान।',
-  'rain probability today': 'आज बारिश की संभावना', Humidity: 'नमी', 'Rain today': 'आज की बारिश', 'Wind speed': 'हवा की गति',
+  'rain probability today': 'आज बारिश की संभावना', Humidity: 'नमी', 'Rained so far': 'अब तक हुई बारिश', 'Wind speed': 'हवा की गति',
   'Feels like': 'महसूस होगा', '5-Day Weather Outlook': 'अगले 5 दिनों का मौसम',
   'Forecast values are updated from the weather source': 'पूर्वानुमान मौसम स्रोत से अपडेट होता है',
   'Crop Condition': 'फसल की स्थिति', 'Is my crop healthy?': 'क्या मेरी फसल स्वस्थ है?', 'Overall Crop Status': 'फसल की कुल स्थिति',
