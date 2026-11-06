@@ -22,7 +22,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f5f7f2] flex flex-col">
+    <div className="min-h-screen bg-[#f4efe6] text-[#161922] flex flex-col relative selection:bg-[#2b2f8f] selection:text-white">
+      {/* Tactile Paper Grain Overlay */}
+      <div className="paper-grain" aria-hidden="true" />
+
       {/* Desktop Sidebar */}
       {profileState === 'ready' && <Sidebar />}
 
@@ -31,8 +34,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         {profileState === 'ready' && <Header />}
 
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-7 lg:px-10 py-6 sm:py-8 pb-24 md:pb-12">
-          {profileState === 'loading' && <div className="p-16 text-center text-stone-500 font-medium">{t('Loading your farm profile...')}</div>}
-          {profileState === 'error' && <div className="p-16 text-center text-red-700">{t('Farm profile could not be loaded. Check that the CropSense API is running and refresh.')}</div>}
+          {profileState === 'loading' && <div className="p-16 text-center font-mono font-bold text-sm text-[#585c6d] animate-pulse">{t('Loading your farm profile...')}</div>}
+          {profileState === 'error' && <div className="p-16 text-center font-mono font-bold text-sm text-[#c32a10]">{t('Farm profile could not be loaded. Check that the CropSense API is running and refresh.')}</div>}
           {profileState === 'setup' && <MyFarmPage onSaved={() => setProfileState('ready')} />}
           {profileState === 'ready' && (children || <Outlet />)}
         </main>

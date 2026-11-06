@@ -2,20 +2,32 @@
 @import "leaflet/dist/leaflet.css";
 
 :root {
-  font-family: "Open Sans", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
-  color: #1c2921;
-  background: #f5f7f2;
+  font-family: "Bricolage Grotesque", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
+  color: #161922;
+  background: #f4efe6;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --agri-green: #26734d;
-  --agri-green-dark: #185b3a;
-  --agri-ink: #1c2921;
-  --agri-muted: #536158;
-  --agri-border: #e3e9e2;
-  --page-bg: #f5f7f2;
-  --surface: #ffffff;
+
+  /* Presswork Design Tokens - Light Theme (Warm Risograph Paper) */
+  --press-bg: #f4efe6;
+  --press-paper: #fdfbf7;
+  --press-subcard: #f4efe6;
+  --press-ink: #161922;
+  --press-muted: #585c6d;
+  --press-border: #161922;
+  --press-border-subtle: rgba(22, 25, 34, 0.14);
+  --press-blue: #2b2f8f;
+  --press-orange: #ff5a36;
+  --press-lime: #b6ff2e;
+  --press-amber: #f59e0b;
+  --press-shadow: 4px 4px 0 #161922;
+  --press-shadow-sm: 2px 2px 0 #161922;
+  --press-shadow-lg: 6px 6px 0 #161922;
+
+  --page-bg: var(--press-bg);
+  --surface: var(--press-paper);
 }
 
 html {
@@ -25,13 +37,25 @@ html {
 
 html[data-theme="dark"] {
   color-scheme: dark;
-  --agri-green: #8ed0a8;
-  --agri-green-dark: #b2e4c3;
-  --agri-ink: #edf5ef;
-  --agri-muted: #a9b7ad;
-  --agri-border: #34443a;
-  --page-bg: #121a15;
-  --surface: #1b261f;
+
+  /* Presswork Design Tokens - Dark Theme (Warm Charcoal Archival Cardstock) */
+  --press-bg: #181715;
+  --press-paper: #23211e;
+  --press-subcard: #2d2a26;
+  --press-ink: #f6ede2;
+  --press-muted: #a49c90;
+  --press-border: #dfd5c5;
+  --press-border-subtle: rgba(223, 213, 197, 0.16);
+  --press-blue: #313e75;
+  --press-orange: #e05a3f;
+  --press-lime: #b6f037;
+  --press-amber: #f0a824;
+  --press-shadow: 4px 4px 0 #0d0c0a;
+  --press-shadow-sm: 2px 2px 0 #0d0c0a;
+  --press-shadow-lg: 6px 6px 0 #0d0c0a;
+
+  --page-bg: var(--press-bg);
+  --surface: var(--press-paper);
 }
 
 body {
@@ -40,15 +64,168 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: var(--page-bg);
-  color: var(--agri-ink);
+  color: var(--press-ink);
   font-size: 16px;
-  font-family: "Open Sans", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
-  transition: background-color 260ms ease, color 260ms ease;
+  font-family: "Bricolage Grotesque", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
+  transition: background-color 200ms ease, color 200ms ease;
+  position: relative;
 }
 
-.text-xs,
-.text-\[11px\] {
-  font-size: 0.8125rem;
+/* Tactile Paper Grain Overlay */
+.paper-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.4'/></svg>");
+  mix-blend-mode: multiply;
+}
+
+html[data-theme="dark"] .paper-grain {
+  opacity: 0.12;
+  mix-blend-mode: screen;
+}
+
+/* Space Mono for metadata, telemetry, and contract stamps */
+.font-mono,
+.press-stamp,
+.mono-stamp {
+  font-family: "Space Mono", ui-monospace, SFMono-Regular, Menlo, monospace !important;
+}
+
+/* Editorial Serif */
+.font-serif,
+.editorial-serif {
+  font-family: "Fraunces", Georgia, serif !important;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+.page-heading h2,
+.dashboard-welcome h2 {
+  font-family: "Bricolage Grotesque", "Noto Sans Devanagari", sans-serif;
+  letter-spacing: -0.03em;
+  font-weight: 750;
+}
+
+/* Tactile Presswork UI Components */
+.press-card {
+  position: relative;
+  background: var(--press-paper);
+  border: 2px solid var(--press-border);
+  border-radius: 22px;
+  box-shadow: var(--press-shadow);
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.press-card-interactive {
+  position: relative;
+  background: var(--press-paper);
+  border: 2px solid var(--press-border);
+  border-radius: 22px;
+  box-shadow: var(--press-shadow);
+  cursor: pointer;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.press-card-interactive:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--press-shadow-lg);
+}
+
+.press-card-interactive:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* Tactile Pill Buttons */
+.press-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.35rem;
+  border-radius: 9999px;
+  border: 2px solid var(--press-border);
+  font-weight: 700;
+  font-size: 0.92rem;
+  line-height: 1.2;
+  box-shadow: var(--press-shadow-sm);
+  background: var(--press-paper);
+  color: var(--press-ink);
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.press-btn:hover {
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: var(--press-shadow);
+}
+
+.press-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none !important;
+}
+
+.press-btn-primary {
+  background: var(--press-blue);
+  color: #ffffff !important;
+  border-color: var(--press-border);
+}
+
+.press-btn-primary:hover {
+  filter: brightness(1.12);
+}
+
+.press-btn-vermilion {
+  background: var(--press-orange);
+  color: #ffffff !important;
+  border-color: var(--press-border);
+}
+
+.press-btn-lime {
+  background: var(--press-lime);
+  color: #161922 !important;
+  border-color: var(--press-border);
+}
+
+/* Riso Monospace Stamp Chips */
+.press-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  border: 1.5px solid var(--press-border);
+  background: var(--press-paper);
+  font-family: "Space Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--press-ink);
+  box-shadow: 1.5px 1.5px 0 var(--press-shadow);
+}
+
+/* Animations */
+@keyframes printHit {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-print-hit {
+  animation: printHit 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 button,
@@ -59,80 +236,37 @@ textarea {
   min-height: 44px;
 }
 
-h1,
-h2,
-h3,
-h4,
-.page-heading h2,
-.dashboard-welcome h2 {
-  font-family: "Volkhov", "Noto Sans Devanagari", Georgia, serif;
-}
-
-button,
-select,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-button,
-a,
-input,
-select,
-textarea,
-.rounded-2xl,
-.rounded-3xl,
-[class*="rounded-xl"] {
-  transition-property: color, background-color, border-color, box-shadow, transform;
-  transition-duration: 200ms;
-  transition-timing-function: cubic-bezier(0.2, 0.75, 0.3, 1);
-}
-
-button:active,
-a:active {
-  transform: scale(0.985);
-}
-
-a.bg-white:hover,
-.bg-white.rounded-2xl:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgb(33 54 39 / 0.09);
-}
-
 button:focus-visible,
 a:focus-visible,
 select:focus-visible,
 input:focus-visible {
-  outline: 3px solid #70b58d;
-  outline-offset: 3px;
+  outline: 3px solid var(--press-blue);
+  outline-offset: 2px;
 }
 
 ::selection {
-  color: #154b31;
-  background: #cdebd8;
+  color: #ffffff;
+  background: var(--press-blue);
 }
 
 .page-heading {
   padding-bottom: 0.1rem;
-  animation: page-enter 420ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
+  animation: printHit 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .page-heading h2 {
-  color: var(--agri-ink);
-  font-size: clamp(1.65rem, 4vw, 2.1rem);
-  font-weight: 700;
+  color: var(--press-ink);
+  font-size: clamp(1.65rem, 4vw, 2.2rem);
+  font-weight: 800;
   letter-spacing: -0.035em;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 .page-heading > p {
   max-width: 44rem;
-  color: var(--agri-muted);
+  color: var(--press-muted);
   font-size: 0.95rem;
-  line-height: 1.7;
-}
-
-.dashboard-welcome h2 {
-  letter-spacing: -0.035em;
+  line-height: 1.6;
 }
 
 .touch-target {
@@ -140,151 +274,255 @@ input:focus-visible {
   min-width: 44px;
 }
 
-@keyframes page-enter {
-  from { opacity: 0; transform: translateY(7px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Custom Tactile Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--press-bg);
+  border-left: 1.5px solid var(--press-border);
+}
+::-webkit-scrollbar-thumb {
+  background: #ded5c5;
+  border: 1.5px solid var(--press-border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--press-blue);
 }
 
-@media (max-width: 640px) {
-  .page-heading > p { font-size: 0.9rem; }
+/* =========================================================================
+   WARM ARTISANAL DARK MODE (Capturing the Exact Expression of the Light Theme)
+   ========================================================================= */
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #332f2b;
+  border-color: var(--press-border);
 }
 
-/* Keep Tailwind's existing light palette readable after the theme switch. */
+/* App Canvas & Fixed Chrome */
 html[data-theme="dark"] body,
-html[data-theme="dark"] .bg-\[\#f5f7f2\],
-html[data-theme="dark"] .bg-\[\#fbfcf9\],
-html[data-theme="dark"] .bg-\[\#f7f9f5\] {
-  background-color: var(--page-bg) !important;
+html[data-theme="dark"] [class*="bg-[#f4efe6]"] {
+  background-color: var(--press-bg) !important;
 }
 
-html[data-theme="dark"] [class*="bg-[#fbfcf9]"],
-html[data-theme="dark"] [class*="bg-[#f7f9f5]"] {
-  background-color: var(--surface) !important;
+html[data-theme="dark"] header {
+  background-color: rgba(24, 23, 21, 0.94) !important;
+  border-color: var(--press-border) !important;
 }
 
-html[data-theme="dark"] .bg-white,
-html[data-theme="dark"] [class*="bg-white/"],
-html[data-theme="dark"] .bg-stone-50,
-html[data-theme="dark"] .bg-stone-100,
-html[data-theme="dark"] [class*="bg-stone-50/"],
-html[data-theme="dark"] [class*="bg-stone-100/"] {
-  background-color: var(--surface) !important;
+html[data-theme="dark"] aside {
+  background-color: var(--press-bg) !important;
+  border-color: var(--press-border) !important;
 }
 
-html[data-theme="dark"] [class~="text-stone-900"],
-html[data-theme="dark"] [class~="text-stone-950"],
-html[data-theme="dark"] [class~="text-stone-800"] {
-  color: #edf5ef !important;
+html[data-theme="dark"] nav {
+  background-color: rgba(24, 23, 21, 0.96) !important;
+  border-color: var(--press-border) !important;
 }
 
-html[data-theme="dark"] [class~="text-stone-700"],
-html[data-theme="dark"] [class~="text-stone-600"],
-html[data-theme="dark"] [class~="text-stone-500"] {
-  color: #b5c2b9 !important;
+/* Main Card Surfaces (Warm Archival Paper Sheets) */
+html[data-theme="dark"] .press-card,
+html[data-theme="dark"] .press-card-interactive,
+html[data-theme="dark"] [class*="bg-[#fdfbf7]"] {
+  background-color: var(--press-paper) !important;
+  border-color: var(--press-border) !important;
 }
 
-html[data-theme="dark"] [class~="text-stone-400"] {
-  color: #91a197 !important;
+/* Subcards, Metric Chips, Tickers & Dropdowns */
+html[data-theme="dark"] [class*="bg-[#fdfbf7]"] [class*="bg-[#f4efe6]"],
+html[data-theme="dark"] [class*="rounded-"][class*="bg-[#f4efe6]"],
+html[data-theme="dark"] details[class*="bg-[#fdfbf7]"] [class*="bg-[#f4efe6]"] {
+  background-color: var(--press-subcard) !important;
+  border-color: var(--press-border) !important;
 }
 
-/* Dark mode text tokens. Keep small labels and icon captions readable too. */
-html[data-theme="dark"] [class~="text-emerald-300"],
-html[data-theme="dark"] [class~="text-emerald-600"],
-html[data-theme="dark"] [class~="text-emerald-700"],
-html[data-theme="dark"] [class~="text-emerald-800"],
-html[data-theme="dark"] [class~="text-emerald-900"],
-html[data-theme="dark"] [class~="text-emerald-950"] {
-  color: #a9e6bd !important;
+/* -------------------------------------------------------------------
+   TINTED CARDS: Organic Paper Washes, Not Harsh Neon Boxes
+   ------------------------------------------------------------------- */
+
+/* Advice Card (in light mode: soft sky #eef4ff) -> in dark: warm midnight twilight wash */
+html[data-theme="dark"] [class*="bg-[#eef4ff]"] {
+  background-color: #212330 !important;
+  border-color: #434f7c !important;
 }
 
-html[data-theme="dark"] [class~="text-amber-500"],
-html[data-theme="dark"] [class~="text-amber-600"],
-html[data-theme="dark"] [class~="text-amber-700"],
-html[data-theme="dark"] [class~="text-amber-800"],
-html[data-theme="dark"] [class~="text-amber-900"],
-html[data-theme="dark"] [class~="text-amber-950"] {
-  color: #f5d98d !important;
+/* Urgent / Heat / Warning Cards (in light: #fff5f0, #fff5f2) -> in dark: warm terracotta paper wash */
+html[data-theme="dark"] [class*="bg-[#fff5f0]"],
+html[data-theme="dark"] [class*="bg-[#fff5f2]"] {
+  background-color: #2c1c1a !important;
+  border-color: #e05a3f !important;
 }
 
-html[data-theme="dark"] [class~="text-sky-600"],
-html[data-theme="dark"] [class~="text-sky-800"],
-html[data-theme="dark"] [class~="text-sky-900"],
-html[data-theme="dark"] [class~="text-sky-950"] {
-  color: #a9def2 !important;
+/* Action / Recommendation Card (in light: #f0f9db) -> in dark: warm dark forest wash */
+html[data-theme="dark"] [class*="bg-[#f0f9db]"] {
+  background-color: #1e281b !important;
+  border-color: #9ecc3b !important;
 }
 
-html[data-theme="dark"] [class~="text-red-600"],
-html[data-theme="dark"] [class~="text-red-700"],
-html[data-theme="dark"] [class~="text-red-800"],
-html[data-theme="dark"] [class~="text-red-900"],
-html[data-theme="dark"] [class~="text-red-950"] {
-  color: #ffaaa9 !important;
+/* Fallback / Error Stamp (in light: #fff1e8) -> in dark: warm roasted clay */
+html[data-theme="dark"] [class*="bg-[#fff1e8]"] {
+  background-color: #2f1d19 !important;
+  border-color: #e05a3f !important;
 }
 
-html[data-theme="dark"] [class*="border-stone-"],
-html[data-theme="dark"] [class*="border-\[\#e"] {
-  border-color: #34443a !important;
+/* Notice Card (in light: #fffdf5) -> in dark: warm amber paper wash */
+html[data-theme="dark"] [class*="bg-[#fffdf5]"] {
+  background-color: #292318 !important;
+  border-color: #f0a824 !important;
 }
 
-html[data-theme="dark"] [class*="bg-emerald-50"],
-html[data-theme="dark"] [class*="bg-emerald-100"],
-html[data-theme="dark"] [class*="bg-emerald-200"] {
-  background-color: #20382b !important;
+/* -------------------------------------------------------------------
+   RISO SPOT COLORS: Deep Heritage Indigo, Warm Vermilion & Chartreuse
+   ------------------------------------------------------------------- */
+
+/* The Blue: Deep Heritage Indigo (Refined & Grounded, not glowing purple) */
+html[data-theme="dark"] [class*="bg-[#2b2f8f]"] {
+  background-color: #2e3b70 !important;
+  border-color: var(--press-border) !important;
+  color: #ffffff !important;
 }
 
-html[data-theme="dark"] [class*="text-emerald-900"],
-html[data-theme="dark"] [class*="text-emerald-950"],
-html[data-theme="dark"] [class*="text-emerald-800"] {
-  color: #b8e7c8 !important;
+html[data-theme="dark"] .press-btn-primary {
+  background-color: #313e75 !important;
+  border-color: var(--press-border) !important;
+  color: #ffffff !important;
 }
 
-html[data-theme="dark"] [class*="bg-amber-50"],
-html[data-theme="dark"] [class*="bg-amber-100"],
-html[data-theme="dark"] [class*="bg-amber-200"] {
-  background-color: #3a311e !important;
+html[data-theme="dark"] .press-btn-primary:hover {
+  background-color: #3d4c8e !important;
 }
 
-html[data-theme="dark"] [class*="text-amber-950"],
-html[data-theme="dark"] [class*="text-amber-900"],
-html[data-theme="dark"] [class*="text-amber-800"] {
-  color: #f1d694 !important;
+/* Blue Text & Icons: Soft Atmospheric Slate-Cornflower (High Contrast, Gentle on Eyes) */
+html[data-theme="dark"] [class*="text-[#2b2f8f]"],
+html[data-theme="dark"] svg[class*="text-[#2b2f8f]"] {
+  color: #859be6 !important;
 }
 
-html[data-theme="dark"] [class*="bg-sky-50"],
-html[data-theme="dark"] [class*="bg-sky-100"],
-html[data-theme="dark"] [class*="bg-sky-200"] {
-  background-color: #1c3440 !important;
+/* The Lime: Agricultural Chartreuse (Punchy & Fresh) */
+html[data-theme="dark"] [class*="bg-[#b6ff2e]"] {
+  background-color: var(--press-lime) !important;
+  border-color: var(--press-border) !important;
 }
 
-html[data-theme="dark"] [class*="text-sky-950"],
-html[data-theme="dark"] [class*="text-sky-900"],
-html[data-theme="dark"] [class*="text-sky-800"] {
-  color: #b5e4f4 !important;
+/* Text and icons inside lime pills must stay deep dark ink for razor-sharp visibility */
+html[data-theme="dark"] [class*="bg-[#b6ff2e]"] svg,
+html[data-theme="dark"] [class*="bg-[#b6ff2e]"] span,
+html[data-theme="dark"] [class*="bg-[#b6ff2e]"] {
+  color: #181715 !important;
 }
 
-html[data-theme="dark"] [class*="bg-red-50"],
-html[data-theme="dark"] [class*="bg-red-100"],
-html[data-theme="dark"] [class*="bg-red-200"] {
-  background-color: #3b2425 !important;
+/* The Vermilion: Warm Persimmon (Alerts) */
+html[data-theme="dark"] [class*="bg-[#ff5a36]"] {
+  background-color: var(--press-orange) !important;
+  border-color: var(--press-border) !important;
 }
 
-html[data-theme="dark"] [class*="border-emerald-"],
-html[data-theme="dark"] [class*="border-amber-"],
-html[data-theme="dark"] [class*="border-sky-"],
-html[data-theme="dark"] [class*="border-red-"] {
-  border-color: #405449 !important;
+html[data-theme="dark"] [class*="bg-[#ff5a36]/20"] {
+  background-color: rgba(224, 90, 63, 0.22) !important;
 }
 
-html[data-theme="dark"] .shadow-\[0_-8px_24px_rgba\(33\,54\,39\,0\.06\)\] {
-  box-shadow: 0 -8px 24px rgb(0 0 0 / 0.28) !important;
+html[data-theme="dark"] [class*="bg-[#f59e0b]/20"] {
+  background-color: rgba(240, 168, 36, 0.22) !important;
 }
 
+/* -------------------------------------------------------------------
+   HIGH-CONTRAST TYPOGRAPHY & INK BORDERS
+   ------------------------------------------------------------------- */
+
+/* Primary Ink: Warm Bone-White (Max readability, soft warm tone) */
+html[data-theme="dark"] [class*="text-[#161922]"] {
+  color: var(--press-ink) !important;
+}
+
+/* Secondary / Muted Ink: Warm Sand-Stone (Clear WCAG AAA contrast) */
+html[data-theme="dark"] [class*="text-[#585c6d]"] {
+  color: var(--press-muted) !important;
+}
+
+/* Alert Texts */
+html[data-theme="dark"] [class*="text-[#c32a10]"] {
+  color: #ff8670 !important;
+}
+
+html[data-theme="dark"] [class*="text-[#ff5a36]"] {
+  color: #ff755c !important;
+}
+
+html[data-theme="dark"] [class*="text-[#f59e0b]"] {
+  color: #f7bf4f !important;
+}
+
+/* Tactile Warm Bone Borders Framing Every Element */
+html[data-theme="dark"] [class*="border-[#161922]"] {
+  border-color: var(--press-border) !important;
+}
+
+html[data-theme="dark"] [class*="border-[#161922]/10"],
+html[data-theme="dark"] [class*="divide-[#161922]/10"] > * + * {
+  border-color: var(--press-border-subtle) !important;
+}
+
+/* Interactive Hover States */
+html[data-theme="dark"] [class*="hover:bg-[#efe7d8]"]:hover,
+html[data-theme="dark"] [class*="hover:bg-[#eae1d2]"]:hover,
+html[data-theme="dark"] [class*="hover:bg-[#f4efe6]/50"]:hover {
+  background-color: #2f2b26 !important;
+}
+
+/* Inputs, Selects & Accordions */
 html[data-theme="dark"] input,
 html[data-theme="dark"] select,
 html[data-theme="dark"] textarea {
-  color: #edf5ef;
-  background-color: #1b261f;
-  border-color: #45564b;
+  background-color: #23211e !important;
+  color: var(--press-ink) !important;
+  border-color: var(--press-border) !important;
+}
+
+html[data-theme="dark"] select option {
+  background-color: #23211e !important;
+  color: var(--press-ink) !important;
+}
+
+html[data-theme="dark"] details {
+  background-color: #23211e !important;
+  border-color: var(--press-border) !important;
+}
+
+/* Physical Hard Drop-Shadows (Deep Ink Offset Shadow) */
+html[data-theme="dark"] [class*="shadow-["][class*="#161922"] {
+  box-shadow: var(--press-shadow) !important;
+}
+
+html[data-theme="dark"] [class*="shadow-[1.5px_1.5px_0_#161922]"],
+html[data-theme="dark"] [class*="shadow-[2px_2px_0_#161922]"] {
+  box-shadow: var(--press-shadow-sm) !important;
+}
+
+html[data-theme="dark"] [class*="shadow-[3px_3px_0_#161922]"] {
+  box-shadow: 3px 3px 0 #0d0c0a !important;
+}
+
+html[data-theme="dark"] [class*="shadow-[4px_4px_0_#161922]"] {
+  box-shadow: var(--press-shadow) !important;
+}
+
+html[data-theme="dark"] [class*="shadow-[5px_5px_0_#161922]"] {
+  box-shadow: 5px 5px 0 #0d0c0a !important;
+}
+
+html[data-theme="dark"] [class*="shadow-[6px_6px_0_#161922]"] {
+  box-shadow: var(--press-shadow-lg) !important;
+}
+
+/* Alert Shadows */
+html[data-theme="dark"] [class*="shadow-[4px_4px_0_#ff5a36]"],
+html[data-theme="dark"] [class*="shadow-[5px_5px_0_#ff5a36]"] {
+  box-shadow: 5px 5px 0 #e05a3f !important;
+}
+
+html[data-theme="dark"] [class*="shadow-[5px_5px_0_#f59e0b]"] {
+  box-shadow: 5px 5px 0 #f0a824 !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

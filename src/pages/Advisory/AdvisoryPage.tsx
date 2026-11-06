@@ -20,42 +20,56 @@ export const AdvisoryPage: React.FC = () => {
       .catch(() => setError('Farm guidance is unavailable. Start the CropSense API and try again.'));
   }, [t]);
 
-  if (error) return <div className="p-16 text-center text-red-700">{t(error)}</div>;
+  if (error) {
+    return (
+      <div className="p-16 text-center">
+        <div className="inline-block p-6 rounded-2xl border-2 border-[#161922] bg-[#fff1e8] text-[#c32a10] shadow-[4px_4px_0_#161922] font-mono text-sm font-bold">
+          {t(error)}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-7 max-w-5xl mx-auto">
+    <div className="space-y-7 max-w-5xl mx-auto animate-print-hit">
       {/* Question Header */}
       <div className="page-heading">
-        <div className="flex items-center gap-2 text-xs font-semibold text-emerald-800 uppercase tracking-wider mb-0.5">
-          <ClipboardCheck size={14} className="text-emerald-700" />
+        <div className="flex items-center gap-2 font-mono text-xs font-bold text-[#2b2f8f] uppercase tracking-wider mb-1">
+          <ClipboardCheck size={14} strokeWidth={2.5} />
           <span>{t('Field Guidance')}</span>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight">
+        <h2 className="text-2xl sm:text-4xl font-black text-[#161922] tracking-tight">
           {t('What should I do on the farm today?')}
         </h2>
-        <p className="text-sm text-stone-600 mt-1">
+        <p className="text-sm text-[#585c6d] mt-1 font-medium">
           {t('Simple daily checklist with timing and clear reasons for your crop.')}
         </p>
       </div>
 
       {/* Visual Advisory Header Banner */}
-      <div className="rounded-3xl border border-emerald-900 bg-emerald-950 p-5 text-white shadow-sm">
-        <span className="text-xs font-bold uppercase tracking-wider text-emerald-200">{t('Daily Agronomy Advice')}</span>
-        <h3 className="mt-1 text-lg font-bold">{advisories.length} {t(advisories.length === 1 ? 'task' : 'tasks')} {t('for your crop today')}</h3>
+      <div className="rounded-[22px] border-2 border-[#161922] bg-[#2b2f8f] p-6 text-white shadow-[4px_4px_0_#161922]">
+        <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#b6ff2e]">
+          {t('Daily Agronomy Advice')}
+        </span>
+        <h3 className="mt-1 text-xl sm:text-2xl font-black tracking-tight">
+          {advisories.length} {t(advisories.length === 1 ? 'task' : 'tasks')} {t('for your crop today')}
+        </h3>
       </div>
 
       {/* Actionable Advisories List */}
-      <div className="space-y-4">
+      <div className="space-y-5">
         {advisories.map((item) => (
-          <Card key={item.id} className="border-stone-200/80 shadow-sm">
-            <div className="flex items-start justify-between gap-3 pb-3.5 border-b border-stone-100">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-emerald-100 text-emerald-900 rounded-xl shrink-0">
-                  <ClipboardCheck size={24} />
+          <Card key={item.id}>
+            <div className="flex items-start justify-between gap-3 pb-4 border-b-2 border-[#161922]/10">
+              <div className="flex items-center gap-3.5">
+                <div className="w-11 h-11 rounded-2xl bg-[#b6ff2e] text-[#161922] border-2 border-[#161922] shadow-[2px_2px_0_#161922] flex items-center justify-center shrink-0">
+                  <ClipboardCheck size={22} strokeWidth={2.5} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-stone-900 text-lg sm:text-xl">{item.title}</h3>
-                  <div className="flex items-center gap-2 text-xs text-stone-500 mt-0.5">
+                  <h3 className="font-black text-[#161922] text-lg sm:text-xl tracking-tight">
+                    {item.title}
+                  </h3>
+                  <div className="flex items-center gap-2 font-mono text-xs text-[#585c6d] mt-0.5 font-bold uppercase">
                     <span>{item.date}</span>
                     <span>•</span>
                     <span>{t(item.category === 'crop_protection' ? 'Crop protection' : item.category)}</span>
@@ -63,54 +77,54 @@ export const AdvisoryPage: React.FC = () => {
                 </div>
               </div>
               <span
-                className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+                className={`font-mono text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border-2 border-[#161922] shadow-[1.5px_1.5px_0_#161922] ${
                   item.priority === 'urgent'
-                    ? 'bg-amber-100 text-amber-900 border border-amber-200'
-                    : 'bg-stone-100 text-stone-700'
+                    ? 'bg-[#ff5a36] text-white'
+                    : 'bg-[#f4efe6] text-[#161922]'
                 }`}
               >
                 {t(item.priority === 'urgent' ? 'Important' : 'Routine')}
               </span>
             </div>
 
-            {/* Simple Farmer Checklist Format */}
-            <div className="pt-4 space-y-3">
-              {/* 1. What You Should Do (Highlighted in Green) */}
-              <div className="p-4 bg-emerald-50/80 rounded-xl border border-emerald-200">
-                <div className="flex items-center gap-1.5 text-xs font-black text-emerald-900 uppercase tracking-wider mb-1">
-                  <CheckCircle2 size={15} className="text-emerald-700" />
+            {/* Farmer Checklist Format */}
+            <div className="pt-4 space-y-3.5">
+              {/* 1. What You Should Do */}
+              <div className="p-4 sm:p-5 bg-[#f0f9db] rounded-[18px] border-2 border-[#161922] shadow-[2px_2px_0_#161922]">
+                <div className="flex items-center gap-1.5 font-mono text-xs font-black text-[#161922] uppercase tracking-wider mb-1">
+                  <CheckCircle2 size={16} strokeWidth={2.5} className="text-[#2b2f8f]" />
                   <span>{t('Action: What to Do')}</span>
                 </div>
-                <p className="text-emerald-950 font-bold text-base sm:text-lg leading-snug">
+                <p className="text-[#161922] font-black text-base sm:text-lg leading-snug">
                   {item.whatFarmerShouldDo}
                 </p>
               </div>
 
               {/* 2. When to do it */}
-              <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-200/80 flex items-center gap-2.5">
-                <Clock size={16} className="text-stone-600 shrink-0" />
-                <div className="text-xs sm:text-sm">
-                  <span className="font-bold text-stone-900 mr-2">{t('When:')}</span>
-                  <span className="text-stone-800 font-semibold">{item.whenToDoIt}</span>
+              <div className="p-3.5 bg-[#f4efe6] rounded-2xl border-2 border-[#161922] flex items-center gap-2.5">
+                <Clock size={16} strokeWidth={2.5} className="text-[#2b2f8f] shrink-0" />
+                <div className="text-xs sm:text-sm font-semibold">
+                  <span className="font-mono font-bold text-[#161922] mr-2 uppercase">{t('When:')}</span>
+                  <span className="text-[#161922]">{item.whenToDoIt}</span>
                 </div>
               </div>
 
-              {/* 3 & 4. What is happening & Why (Two columns) */}
+              {/* 3 & 4. What is happening & Why */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-1">
-                <div className="p-3.5 bg-stone-50/70 rounded-xl border border-stone-100">
-                  <div className="flex items-center gap-1 text-[11px] font-bold text-stone-500 uppercase tracking-wider mb-1">
-                    <AlertCircle size={12} className="text-stone-400" />
+                <div className="p-4 bg-[#f4efe6] rounded-2xl border-1.5 border-[#161922]">
+                  <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-[#585c6d] uppercase tracking-wider mb-1.5">
+                    <AlertCircle size={14} className="text-[#2b2f8f]" strokeWidth={2.5} />
                     <span>{t('What is happening')}</span>
                   </div>
-                  <p className="text-stone-700 leading-relaxed font-medium">{item.whatIsHappening}</p>
+                  <p className="text-[#161922] leading-relaxed font-semibold">{item.whatIsHappening}</p>
                 </div>
 
-                <div className="p-3.5 bg-stone-50/70 rounded-xl border border-stone-100">
-                  <div className="flex items-center gap-1 text-[11px] font-bold text-stone-500 uppercase tracking-wider mb-1">
-                    <HelpCircle size={12} className="text-stone-400" />
+                <div className="p-4 bg-[#f4efe6] rounded-2xl border-1.5 border-[#161922]">
+                  <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-[#585c6d] uppercase tracking-wider mb-1.5">
+                    <HelpCircle size={14} className="text-[#2b2f8f]" strokeWidth={2.5} />
                     <span>{t('Why this matters')}</span>
                   </div>
-                  <p className="text-stone-700 leading-relaxed font-medium">{item.why}</p>
+                  <p className="text-[#161922] leading-relaxed font-semibold">{item.why}</p>
                 </div>
               </div>
             </div>

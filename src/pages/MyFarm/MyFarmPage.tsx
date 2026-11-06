@@ -157,8 +157,8 @@ export const MyFarmPage: React.FC<MyFarmPageProps> = ({ onSaved }) => {
     }
   };
 
-  const inputClass = 'mt-1 w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-100';
-  const labelClass = 'block text-sm font-semibold text-stone-700';
+  const inputClass = 'mt-1.5 w-full rounded-2xl border-2 border-[#161922] bg-[#fdfbf7] px-4 py-2.5 text-sm text-[#161922] shadow-[2px_2px_0_#161922] font-semibold focus:outline-none focus:ring-2 focus:ring-[#2b2f8f]';
+  const labelClass = 'block font-mono text-xs font-bold uppercase tracking-wider text-[#161922]';
   const selectFarmOption = (field: 'crop' | 'cropStage' | 'soilType' | 'irrigationType', label: string, options: string[]) => {
     const value = form[field];
     const selection = options.includes(value) ? value : value ? 'Other' : '';
@@ -202,31 +202,37 @@ export const MyFarmPage: React.FC<MyFarmPageProps> = ({ onSaved }) => {
     setField('longitude', longitude.toFixed(6));
   };
 
-  if (loading) return <div className="p-16 text-center text-stone-500 font-medium">{t('Loading your farm profile...')}</div>;
+  if (loading) return (
+    <div className="p-16 text-center">
+      <div className="inline-block p-4 rounded-full border-2 border-[#161922] bg-[#fdfbf7] shadow-[3px_3px_0_#161922] font-mono text-sm font-bold animate-pulse">
+        {t('Loading your farm profile...')}
+      </div>
+    </div>
+  );
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-4xl space-y-7 animate-print-hit">
       <div className="page-heading">
-        <div className="mb-0.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-800">
-          <Tractor size={14} className="text-emerald-700" />
+        <div className="mb-1 flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider text-[#2b2f8f]">
+          <Tractor size={14} strokeWidth={2.5} />
           <span>{t('Farm profile')}</span>
         </div>
-        <h2 className="text-2xl font-black tracking-tight text-stone-900 sm:text-3xl">
+        <h2 className="text-2xl font-black tracking-tight text-[#161922] sm:text-4xl">
           {configured ? t('Update your farm details') : t('Set up your farm profile')}
         </h2>
-        <p className="mt-1 text-sm text-stone-600">
+        <p className="mt-1 text-sm text-[#585c6d] font-medium">
           {configured ? t('Keep your farmer and field information current for local forecasts and advice.') : t('Add your details to start receiving weather and crop guidance for your farm.')}
         </p>
       </div>
 
-      {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{t(error)}</div>}
-      {savedMessage && <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-semibold text-emerald-800">{t('Farm profile saved.')}</div>}
+      {error && <div role="alert" className="rounded-2xl border-2 border-[#161922] bg-[#fff1e8] p-4 text-sm font-bold text-[#c32a10] shadow-[3px_3px_0_#161922]">{t(error)}</div>}
+      {savedMessage && <div role="status" className="rounded-2xl border-2 border-[#161922] bg-[#f0f9db] p-4 text-sm font-bold text-[#161922] shadow-[3px_3px_0_#161922]">{t('Farm profile saved.')}</div>}
 
-      <form onSubmit={save} className="space-y-5">
+      <form onSubmit={save} className="space-y-6">
         <Card title={t('Farmer details')} subtitle={t('Your contact and home location')}>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className={labelClass}>{t('Farmer name')}<input className={inputClass} required maxLength={100} value={form.farmerName} onChange={(e) => setField('farmerName', e.target.value)} /></label>
-            <label className={labelClass}>{t('Phone number')}<input className={inputClass} required maxLength={15} type="tel" inputMode="tel" placeholder="+91 98765 43210" pattern="\+91 ?[6-9][0-9]{4} ?[0-9]{5}" aria-describedby="phone-error" value={form.phone} onChange={(e) => setField('phone', e.target.value)} />{form.phone && !phoneIsValid && <span id="phone-error" className="mt-1 block text-sm font-semibold text-red-800">{t('Enter a valid Indian mobile number with +91 and 10 digits.')}</span>}</label>
+            <label className={labelClass}>{t('Phone number')}<input className={inputClass} required maxLength={15} type="tel" inputMode="tel" placeholder="+91 98765 43210" pattern="\+91 ?[6-9][0-9]{4} ?[0-9]{5}" aria-describedby="phone-error" value={form.phone} onChange={(e) => setField('phone', e.target.value)} />{form.phone && !phoneIsValid && <span id="phone-error" className="mt-1 block font-mono text-xs font-bold text-[#c32a10]">{t('Enter a valid Indian mobile number with +91 and 10 digits.')}</span>}</label>
             <label className={labelClass}>{t('Village')}<input className={inputClass} required maxLength={100} value={form.village} onChange={(e) => setField('village', e.target.value)} /></label>
             <label className={labelClass}>{t('District')}<input className={inputClass} required maxLength={100} value={form.district} onChange={(e) => setField('district', e.target.value)} /></label>
             <label className={labelClass}>{t('State')}<input className={inputClass} required maxLength={100} value={form.state} onChange={(e) => setField('state', e.target.value)} /></label>
@@ -245,8 +251,8 @@ export const MyFarmPage: React.FC<MyFarmPageProps> = ({ onSaved }) => {
         </Card>
 
         <Card title={t('Farm location')} subtitle={t('Tap the map where your farm is. You can also move the pin or enter coordinates below.')}>
-          <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-emerald-900"><MapPin size={17} />{hasCoordinates ? `${form.latitude}, ${form.longitude}` : t('No location selected yet')}</div>
-          <div className="mb-4 h-72 overflow-hidden rounded-xl border border-stone-200 sm:h-80">
+          <div className="mb-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-1.5 border-[#161922] bg-[#f4efe6] font-mono text-xs font-bold text-[#161922] shadow-xs"><MapPin size={15} className="text-[#2b2f8f]" />{hasCoordinates ? `${form.latitude}, ${form.longitude}` : t('No location selected yet')}</div>
+          <div className="mb-4 h-72 overflow-hidden rounded-[20px] border-2 border-[#161922] shadow-[3px_3px_0_#161922] sm:h-80">
             <MapContainer center={mapCenter} zoom={hasCoordinates ? 14 : 7} scrollWheelZoom={false} className="h-full w-full">
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -270,9 +276,9 @@ export const MyFarmPage: React.FC<MyFarmPageProps> = ({ onSaved }) => {
           </div>
         </Card>
 
-        <div className="flex justify-end">
-          <button type="submit" disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-emerald-800 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-900 disabled:cursor-wait disabled:opacity-60">
-            <Save size={17} />{saving ? t('Saving...') : configured ? t('Save changes') : t('Save farm profile')}
+        <div className="flex justify-end pt-2">
+          <button type="submit" disabled={saving} className="press-btn press-btn-primary px-8 py-3.5 text-base shadow-[3px_3px_0_#161922] disabled:cursor-wait disabled:opacity-60">
+            <Save size={18} strokeWidth={2.5} />{saving ? t('Saving...') : configured ? t('Save changes') : t('Save farm profile')}
           </button>
         </div>
       </form>
